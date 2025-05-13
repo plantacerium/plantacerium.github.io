@@ -164,6 +164,16 @@ Get global config
 git config --global --list
 ````
 
+## GitHUb CLI
+````bash
+sudo dnf install gh
+
+gh auth login
+
+gh repo clone <repository>
+````
+
+
 ## Gitea
 
 ````bash

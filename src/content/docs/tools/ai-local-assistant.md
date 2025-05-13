@@ -36,4 +36,4 @@ ollama pull nomic-embed-text
   }
 ````
 
-Note: I prefer to use it for small tasks or basic boilerplate.
+Note: I prefer to use it for small non code tasks or very basic boilerplate.

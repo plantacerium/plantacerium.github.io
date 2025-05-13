@@ -2,7 +2,7 @@
 title: Hound
 ---
 
-## Hound is for: Search in Codebases
+## Hound is for: search in codebases
 
 Pre requisites:
 * Make
