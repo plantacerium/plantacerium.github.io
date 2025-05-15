@@ -47,9 +47,8 @@ export default defineConfig({
 				},
 				{
 					label: "Lore",
-					autogenerate: { directory: 'lore'},
+					autogenerate: { directory: 'lore' },
 				},
-
 			],
 			favicon: '/plantacerium-favicon.jpg',
 			head: [
