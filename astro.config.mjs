@@ -30,6 +30,10 @@ export default defineConfig({
 					autogenerate: { directory: 'back-end' },
 				},
 				{
+					label: "Golang",
+					autogenerate: { directory: "golang" },
+				},
+				{
 					label: 'Rust',
 					autogenerate: { directory: 'rust' },
 				},
