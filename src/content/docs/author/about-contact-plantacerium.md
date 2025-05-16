@@ -9,9 +9,8 @@ Plantacerium, senior Full-Stack developer, reflecting mastery at craft web exper
 css, sass, bulma, figma, reactjs, nextjs, tanstack query, zustand, redux, react testing, astro, astrodb,
 frontmatter, keystatic cms, snipcart, gsap, animejs, threejs, bootstrap, material ui, radix ui, shadcn,
 chartjs, d3, tanstack table, nodejs, express, api rest, swagger, graphql, better auth, postman, debug,
-web deployments, sql, postgresql, docker, podman, cloudflare, rust, cargo, toml.
+web deployments, sql, postgresql, docker, podman, cloudflare, java, eclipse, maven, spring, golang, rust, cargo, toml.
 * I have participated in hackathons, completed bootcamps, and finish a myriad of courses in practical code platforms.
-* Based in Europe.
 * Based in Europe.
 * Open for remote work.
 * Full time position.
