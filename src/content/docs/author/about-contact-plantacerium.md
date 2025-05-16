@@ -3,7 +3,7 @@ title: About and Contact Plantacerium
 ---
 ## Plantacerium
 Plantacerium, senior Full-Stack developer, reflecting mastery at craft web experiences, ecommerces, dashboards, and programming with Javascript, Java, Golang, Rust.
-* I count 2017 as my starting point at programming, even if at 2015 I started with programming.
+* I count 2017 as my starting point at programming, even if at 2015 I did my first steps.
 * My work experience expanse across big sizes companies, one recognized sport brand, freelance, startups.
 * Based in Europe.
 * Open for remote work.
