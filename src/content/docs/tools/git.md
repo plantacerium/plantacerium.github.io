@@ -2,6 +2,12 @@
 title: Git VCS
 ---
 
+## Links Resources
+[Git](https://git-scm.com)
+[GitHub Cli](https://cli.github.com/)
+[Gitea](https://about.gitea.com/)
+[Jujutsu](https://jj-vcs.github.io/jj/latest/)
+
 ## Git Install
 ````bash
 curl -o git.tar.gz https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.26.2.tar.gz

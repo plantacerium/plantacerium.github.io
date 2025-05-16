@@ -5,6 +5,9 @@ title: NvChad
 ## Use case
 Code Editor. Full keyboard. Search. Autocompletions. Suggestions. Much more...
 
+## Links Resources
+[NvChad](https://nvchad.com/)
+
 ## Set up
 ````bash
 # Download nvim-linux-x86_64.tar.gz

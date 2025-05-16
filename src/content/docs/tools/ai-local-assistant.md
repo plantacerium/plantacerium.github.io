@@ -4,6 +4,10 @@ title: Ollama and Continue Dev
 
 # AI local assistant
 
+## Links Resources
+[Ollama](https://ollama.com)
+[Continue](https://continue.dev)
+
 ## Ollama install
 ````bash
 curl -fsSL https://ollama.com/install.sh | sh

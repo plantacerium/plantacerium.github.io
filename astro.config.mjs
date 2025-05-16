@@ -18,8 +18,8 @@ export default defineConfig({
 					autogenerate: { directory: 'portfolio' },
 				},
 				{
-					label: 'Contact',
-					autogenerate: { directory: 'contact' },
+					label: 'About the Author',
+					autogenerate: { directory: 'about-the-author' },
 				},
 				{
 					label: 'Front-End',
@@ -48,10 +48,6 @@ export default defineConfig({
 				{
 					label: 'Snippets',
 					autogenerate: { directory: 'snippets' },
-				},
-				{
-					label: "Lore",
-					autogenerate: { directory: 'lore' },
 				},
 			],
 			favicon: '/plantacerium-favicon.jpg',

@@ -2,6 +2,7 @@
 title: Sourcebot
 ---
 ## Sourcebot dev is for, search in codebases.
+[SourceBot](https://www.sourcebot.dev/)
 
 Create file:
 ````json

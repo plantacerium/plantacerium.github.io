@@ -10,6 +10,8 @@ Code Editor. Full keyboard. Search. Autocompletions. Suggestions.
 flatpak install flathub com.helix_editor.Helix
 ````
 
+## Links Resources
+[Helix IDE](https://helix-editor.com/)
 [Install languages servers](https://github.com/helix-editor/helix/wiki/Language-Server-Configurations#rust)
 
 ## Features Overview
