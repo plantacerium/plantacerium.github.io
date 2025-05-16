@@ -14,12 +14,12 @@ export default defineConfig({
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/plantacerium' }],
 			sidebar: [
 				{
-					label: 'Portfolio',
-					autogenerate: { directory: 'portfolio' },
+					label: 'Author',
+					autogenerate: { directory: 'author' },
 				},
 				{
-					label: 'About the Author',
-					autogenerate: { directory: 'about-the-author' },
+					label: 'Portfolio',
+					autogenerate: { directory: 'portfolio' },
 				},
 				{
 					label: 'Front-End',
@@ -28,6 +28,10 @@ export default defineConfig({
 				{
 					label: 'Back-End',
 					autogenerate: { directory: 'back-end' },
+				},
+				{
+					label: "Java",
+					autogenerate: { directory: "java" },
 				},
 				{
 					label: "Golang",
@@ -46,8 +50,8 @@ export default defineConfig({
 					autogenerate: { directory: 'tools' },
 				},
 				{
-					label: 'Snippets',
-					autogenerate: { directory: 'snippets' },
+					label: 'Resources',
+					autogenerate: { directory: 'resources' },
 				},
 			],
 			favicon: '/plantacerium-favicon.jpg',
