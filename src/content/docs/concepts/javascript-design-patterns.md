@@ -1,3 +1,0 @@
----
-title: Javascript Design Patterns
----
