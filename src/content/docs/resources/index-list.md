@@ -15,3 +15,7 @@ This index aims to highlight different resources on topics that I explore, read,
 
 ## Libraries
 * A better dotenv–from the creator of dotenv: [DotEnvX](https://dotenvx.com/docs/)
+
+## Tools
+* View markdown in the terminal [MDLess](https://github.com/ttscoff/mdless)
+* Terminal GUI for Git [Lazygit](https://github.com/jesseduffield/lazygit)
