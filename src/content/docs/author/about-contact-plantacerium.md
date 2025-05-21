@@ -24,6 +24,11 @@ Showcasing my skills beyond words or quick programming tests.
 ## Notes
 All ai code will be identified with a note, if there isn't a note then my own thought process is reflected in the code. I use ai if really needed for non code tasks or basic boilerplate.
 
-## Contact Plantacerium 
-## Community Plantacinamics
+## Contact Plantacerium
+## Community Pandacinamics
+
+
 [Discord invitation](https://discord.gg/PU54Wapx)
+
+
+![Pandacinamics](../../../assets/Pandacinamics.jpg)

@@ -11,7 +11,10 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Plantacerium Code Zone',
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/plantacerium' }],
+			social: [
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/plantacerium' },
+				{ icon: 'discord', label: 'Discord', href: 'https://discord.gg/PU54Wapx' }
+			],
 			sidebar: [
 				{
 					label: 'Author',
@@ -54,13 +57,13 @@ export default defineConfig({
 					autogenerate: { directory: 'resources' },
 				},
 			],
-			favicon: '/plantacerium-favicon.jpg',
+			favicon: '/Plantacerium_Panda_favicon.jpg',
 			head: [
 			  {
 				tag: 'link',
 				attrs: {
 				  rel: 'icon',
-				  href: '/plantacerium-favicon.jpg',
+				  href: '/Plantacerium_Panda_favicon.jpg',
 				  sizes: '150x150',
 				},
 			  },
