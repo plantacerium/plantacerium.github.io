@@ -30,5 +30,4 @@ All ai code will be identified with a note, if there isn't a note then my own th
 
 [Discord invitation](https://discord.gg/PU54Wapx)
 
-
-![Pandacinamics](../../../assets/Pandacinamics.jpg)
+<img src="/src/assets/Pandacinamics.jpg" alt="Pandacinamics" style="border-radius: 90px;" width="400px" height="400px">
