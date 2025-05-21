@@ -5,8 +5,8 @@ title: Ollama and Continue Dev
 # AI local assistant
 
 ## Links Resources
-[Ollama](https://ollama.com)
-[Continue](https://continue.dev)
+* [Ollama](https://ollama.com)
+* [Continue](https://continue.dev)
 
 ## Ollama install
 ````bash
