@@ -19,3 +19,7 @@ This index aims to highlight different resources on topics that I explore, read,
 ## Tools
 * View markdown in the terminal [MDLess](https://github.com/ttscoff/mdless)
 * Terminal GUI for Git [Lazygit](https://github.com/jesseduffield/lazygit)
+* Extend cargo to query cargo crates with command cargo info crate
+```bash
+cargo install cargo-info
+```

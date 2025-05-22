@@ -1,3 +1,6 @@
+:root, ::backdrop {
+  --sl-content-width: 65rem;
+}
 & .hero>img {
   border-radius: 90px;
   -webkit-box-shadow: 0px 0px 125px 25px rgba(0, 255, 191, 1);

@@ -11,6 +11,9 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Plantacerium Code Zone',
+			customCss: [
+        		'./src/styles/global.css',
+      		],
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/plantacerium' },
 				{ icon: 'discord', label: 'Discord', href: 'https://discord.gg/PU54Wapx' }
