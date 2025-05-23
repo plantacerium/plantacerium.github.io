@@ -1,5 +1,5 @@
 :root, ::backdrop {
-  --sl-content-width: 65rem;
+  --sl-content-width: 80rem;
 }
 & .hero>img {
   border-radius: 90px;
