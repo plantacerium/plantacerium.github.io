@@ -33,3 +33,16 @@ fish
 cargo install rusty-man
 ```
 * Cheat sheets and search in browser. [Search Patterns](https://quickref.me/google-search.html)
+* Terminal multiplexer, become over powered with this gemstone, [tmux](https://github.com/tmux/tmux/wiki)
+
+ ## Snippets
+
+### Watermark images
+```bash
+// watermark.sh
+#!/bin/#!/bin/bash
+for i in ./*; do
+    composite -dissolve 55% -gravity Center -quality 100 logo.png "$i" "results/$(echo $i | cut -d '/' -f 2)"
+done
+```
+Create the file watermark.sh, inside the folder, and create folder results, inside the same folder, excute file with sh watermark.sh, replace logo.png with your logo.
