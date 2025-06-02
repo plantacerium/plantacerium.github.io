@@ -16,7 +16,7 @@ export default defineConfig({
       		],
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/plantacerium' },
-				{ icon: 'discord', label: 'Discord', href: 'https://discord.gg/PU54Wapx' }
+				{ icon: 'discord', label: 'Discord', href: 'https://discord.gg/nbZqzwKXGS' }
 			],
 			sidebar: [
 				{
