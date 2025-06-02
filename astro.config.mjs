@@ -36,8 +36,8 @@ export default defineConfig({
 					autogenerate: { directory: 'back-end' },
 				},
 				{
-					label: "Java",
-					autogenerate: { directory: "java" },
+					label: "Python",
+					autogenerate: { directory: "python" },
 				},
 				{
 					label: "Golang",
