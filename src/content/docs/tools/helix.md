@@ -41,6 +41,56 @@ display-inlay-hints = true
 C-g = [":new", ":insert-output lazygit", ":buffer-close!", ":redraw"]
 ```
 
+## Language Server Protocol
+After install of language servers, config in use:
+
+```toml
+# languages.toml
+[language-server.astro-ls]
+command = "astro-ls"
+args = ["--stdio"]
+config = {typescript = {tsdk = "/Users/user/.bun/install/global/node_modules/typescript/lib"}, environment = "node"}
+
+[[language]]
+name = "astro"
+auto-format = true
+language-servers = [ "astro-ls" ]
+
+[[language]]
+name = "go"
+auto-format = true
+formatter = { command = "goimports" }
+
+[[language]]
+name = "python"
+language-servers = ["pyright", "ruff", "pylyzer"]
+[language-server.pyright.config.python.analysis]
+typeCheckingMode = "basic"
+[language-server.ruff]
+command = "ruff"
+args = ["server"]
+[language-server.pylyzer]
+command = "pylyzer"
+args = ["--server"]
+
+[language-server.rust-analyzer.config.check]
+command = "clippy"
+
+[language-server.rust-analyzer.config.cargo]
+features = "all"
+
+[language-server.sql-language-server]
+command = "sql-language-server"
+args = ["up", "--method", "stdio"]
+
+[[language]]
+name = "sql"
+language-servers = [ "sql-language-server" ]
+
+[[language]]
+name = "toml"
+formatter = { command = "taplo", args = ["fmt", "-"] }
+```
 ## Features Overview
 * Multiple selections
 * Tree-sitter integration
