@@ -35,6 +35,8 @@ cargo install rusty-man
 * Cheat sheets and search in browser. [Search Patterns](https://quickref.me/google-search.html)
 * Terminal multiplexer, become over powered with this gemstone, [tmux](https://github.com/tmux/tmux/wiki)
 * Create presentations in markdown format and run them from your terminal, [presenterm](https://github.com/mfontanini/presenterm)
+* A better way to navigate directories, find files, and launch commands, [broot](https://dystroy.org/broot/)
+
  ## Snippets
 
 ### Watermark images
