@@ -37,14 +37,3 @@ cargo install rusty-man
 * Create presentations in markdown format and run them from your terminal, [presenterm](https://github.com/mfontanini/presenterm)
 * A better way to navigate directories, find files, and launch commands, [broot](https://dystroy.org/broot/)
 
- ## Snippets
-
-### Watermark images
-```bash
-// watermark.sh
-#!/bin/#!/bin/bash
-for i in ./*; do
-    composite -dissolve 55% -gravity Center -quality 100 logo.png "$i" "results/$(echo $i | cut -d '/' -f 2)"
-done
-```
-Create the file watermark.sh, inside the folder, and create folder results, inside the same folder, excute file with sh watermark.sh, replace logo.png with your logo.
