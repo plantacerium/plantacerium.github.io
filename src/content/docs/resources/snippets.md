@@ -37,6 +37,7 @@ for YEAR in $(seq $CURRENT_YEAR $END_YEAR); do
                 mkdir -p "$YEAR/$MONTH/$DAY-$DAY_OF_WEEK"
                 for HOUR in $(seq -w 00 23)
                 do
+                    # Create the twenty four md files, one per hour.
                     touch "$YEAR/$MONTH/$DAY-$DAY_OF_WEEK/$HOUR.md"
                 done
             fi
