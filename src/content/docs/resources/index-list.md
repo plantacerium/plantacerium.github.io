@@ -36,4 +36,7 @@ cargo install rusty-man
 * Terminal multiplexer, become over powered with this gemstone, [tmux](https://github.com/tmux/tmux/wiki)
 * Create presentations in markdown format and run them from your terminal, [presenterm](https://github.com/mfontanini/presenterm)
 * A better way to navigate directories, find files, and launch commands, [broot](https://dystroy.org/broot/)
+* A syntax-highlighting pager for git, diff, and grep output, [delta](https://dandavison.github.io/delta/)
+* Fast and polyglot tool for code structural search, lint, rewriting at large scale, [ast-grep](https://ast-grep.github.io/)
+
 
