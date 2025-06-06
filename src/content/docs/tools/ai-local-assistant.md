@@ -40,4 +40,12 @@ ollama pull nomic-embed-text
   }
 ````
 
-Note: I prefer to use it for small non code tasks or very basic boilerplate.
+Note: I prefer to use it for non code tasks or very basic boilerplate.
+
+My real use cases for AI are:
+* Questions Creator. Instead of use AI to give me answers, it gives me questions.
+* Enhance my quality question creational process.
+* Play characters from real life or fictional, to obtain their point of view.
+* Enhance my empathical qualities by sharing me different points of view about a situation.
+* PDFs Analyzer.
+
