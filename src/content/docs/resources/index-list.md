@@ -38,6 +38,6 @@ cargo install rusty-man
 * A better way to navigate directories, find files, and launch commands, [broot](https://dystroy.org/broot/)
 * A syntax-highlighting pager for git, diff, and grep output, [delta](https://dandavison.github.io/delta/)
 * Fast and polyglot tool for code structural search, lint, rewriting at large scale, [ast-grep](https://ast-grep.github.io/)
-* Eclipse with pydev for python development and debugging.
+* Python development and debugging from eclipse, [pydev](https://www.pydev.org/)
 * A modern terminal for the 21st century, [rioterm](https://rioterm.com/)
 
