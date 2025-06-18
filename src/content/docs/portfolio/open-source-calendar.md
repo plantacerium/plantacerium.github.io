@@ -2,7 +2,7 @@
 title: Open Source Calendar
 ---
 
-Your calendar for the next ten years, without distracting notifications, and with events and advanced edit and search.
+Your calendar for the next ten years, without distracting notifications, and with events and advanced edit and search features, ready for production.
 
 ## Steps
 * Create folder calendar and file next-ten-years.sh
@@ -34,7 +34,10 @@ for YEAR in $(seq $CURRENT_YEAR $END_YEAR); do
     done
 done
 ````
-* Execute: sh calendar-next-ten-years.sh
+* Execute:
+````bash
+sh next-ten-years.sh
+````
 * It wil create a folder structure for your next ten years with twelve months, the according days, and 24 md files one per hour inside the folder of the day, enabling you to add events to your calendar.
 * Install broot
 ````bash
@@ -44,4 +47,4 @@ cargo install --locked --features clipboard broot
 ````bash
 broot
 ````
-Enjoy You has got the best calendar, blazingly fast, minimalism in design, optimized for advanced and production use cases.
+Enjoy You has got the best calendar, blazingly fast, minimalism in design therefore optimized for advanced and production use cases.
