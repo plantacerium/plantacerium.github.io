@@ -2,7 +2,6 @@
 title: Open Source Calendar
 ---
 
-# Open source calendar
 Your calendar for the next ten years, without distracting notifications, and with events and advanced edit and search.
 
 ## Steps
@@ -45,4 +44,4 @@ cargo install --locked --features clipboard broot
 ````bash
 broot
 ````
-Enjoy You has got the best calendar, blazingly fast, minimalism in design, optimize for advanced and production use cases.
+Enjoy You has got the best calendar, blazingly fast, minimalism in design, optimized for advanced and production use cases.
