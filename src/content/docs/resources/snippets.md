@@ -46,3 +46,80 @@ for YEAR in $(seq $CURRENT_YEAR $END_YEAR); do
 done
 
 ```
+
+## Input Text to Circular Shape
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Circular Text Input</title>
+  <style>
+    body {
+      display: grid;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .circularTextInner {
+      margin: auto;
+      width: 25vw;
+      height: 25vw;
+      display: flex;
+      position: relative;
+    }
+    .circunference {
+      width: 10px;
+      height: 50%;
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin: auto;
+      transform-origin: bottom center;
+      color: #00596d;
+      font-size: 20px;
+    }
+    .inputField {
+      margin: auto;
+      width: 25vw;
+      height: auto;
+      display: flex;
+      position: relative;
+      top: 100px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="circularTextInner" id="circularTextInner"></div>
+    <input class="inputField" type="text" id="inputField" placeholder="Enter text here">
+  </div>
+  
+  <script>
+    function createCircularText(text) {
+      const parentInner = document.getElementById('circularTextInner');
+      parentInner.innerHTML = '';
+      const len = text.length;
+      const angle = 360 / len;
+      for (let i = 0; i < len; i++) {
+        const paragraph = document.createElement("p");
+        paragraph.className = "circunference";
+        paragraph.style = "transform:rotate(" + (360 / len) * i + "deg);";
+        const charNode = document.createTextNode(text.charAt(i));
+        paragraph.appendChild(charNode);
+        parentInner.appendChild(paragraph);
+      }
+    }
+
+    createCircularText("Hello Circular Text World. ");
+
+    document.getElementById('inputField').addEventListener('input', function () {
+      const inputText = this.value;
+      createCircularText(inputText);
+    });
+  </script>
+</body>
+</html>
+```
