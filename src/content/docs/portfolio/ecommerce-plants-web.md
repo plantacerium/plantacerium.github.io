@@ -1,3 +1,0 @@
----
-title: Ecommerce Plants Web
----

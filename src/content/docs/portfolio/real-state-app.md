@@ -1,3 +1,0 @@
----
-title: Real State App
----
