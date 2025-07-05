@@ -102,7 +102,6 @@ done
       const parentInner = document.getElementById('circularTextInner');
       parentInner.innerHTML = '';
       const len = text.length;
-      const angle = 360 / len;
       for (let i = 0; i < len; i++) {
         const paragraph = document.createElement("p");
         paragraph.className = "circunference";
