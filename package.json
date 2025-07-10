@@ -1,18 +1,16 @@
 {
-  "name": "plantacerium",
-  "type": "module",
-  "version": "0.0.1",
-  "packageManager": "pnpm@10.9.0",
+  "name": "entre-plantas",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "build": "rspress build",
+    "dev": "rspress dev",
+    "preview": "rspress preview"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.34.2",
-    "astro": "^5.6.1",
-    "sharp": "^0.34.1"
+    "rspress": "^2.0.0-beta.18"
+  },
+  "devDependencies": {
+    "@types/node": "^22.8.1"
   }
 }

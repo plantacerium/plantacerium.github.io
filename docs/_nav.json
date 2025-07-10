@@ -1,0 +1,22 @@
+[
+  {
+    "text": "Developer Portfolio",
+    "link": "/blog-developer/",
+    "activeMatch": "/blog-developer/"
+  },
+  {
+    "text": "Creando Arte",
+    "link": "/blog-personal/",
+    "activeMatch": "/blog-personal/"
+  },
+  {
+    "text": "Explorando la Naturaleza",
+    "link": "/blog-naturaleza/",
+    "activeMatch": "/blog-naturaleza/"
+  },
+  {
+    "text": "Support my work",
+    "link": "https://ko-fi.com/pandacinamics",
+    "activeMatch": "https://ko-fi.com/pandacinamics"
+  }
+]
