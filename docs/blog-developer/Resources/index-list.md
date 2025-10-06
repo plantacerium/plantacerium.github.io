@@ -2,7 +2,7 @@
 title: List of Resources
 ---
 
-This index aims to highlight different resources on topics that I explore, read, and practice.
+This index aims to highlight different resources on topics where I expanse my knowledge, theory and practice.
 
 ## Data structures:
 * [Youtube channel on data structures](https://www.youtube.com/@WilliamFiset-videos)
@@ -40,4 +40,4 @@ cargo install rusty-man
 * Fast and polyglot tool for code structural search, lint, rewriting at large scale, [ast-grep](https://ast-grep.github.io/)
 * Python development and debugging from eclipse, [pydev](https://www.pydev.org/)
 * A modern terminal for the 21st century, [rioterm](https://rioterm.com/)
-
+* Cheatsheets for the terminal, [tealdeer](https://github.com/tealdeer-rs/tealdeer)

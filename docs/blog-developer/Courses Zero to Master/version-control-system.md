@@ -1,3 +1,0 @@
-# Version Control System Videos
-In progress...
-

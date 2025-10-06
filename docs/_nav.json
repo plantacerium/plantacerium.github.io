@@ -1,18 +1,13 @@
 [
   {
-    "text": "Developer Galaxy",
+    "text": "Developer Blog",
     "link": "/blog-developer/",
     "activeMatch": "/blog-developer/"
   },
   {
-    "text": "Creando Arte",
-    "link": "/blog-personal/",
-    "activeMatch": "/blog-personal/"
-  },
-  {
-    "text": "Explorando la Naturaleza",
-    "link": "/blog-naturaleza/",
-    "activeMatch": "/blog-naturaleza/"
+    "text": "Escribiendo Libros",
+    "link": "https://plantacerium.substack.com/",
+    "activeMatch": "https://plantacerium.substack.com/"
   },
   {
     "text": "Support my work",

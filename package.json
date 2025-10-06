@@ -8,7 +8,8 @@
     "preview": "rspress preview"
   },
   "dependencies": {
-    "rspress": "^2.0.0-beta.18"
+    "rspress": "^2.0.0-beta.18",
+    "rspress-plugin-gh-pages": "^0.3.0"
   },
   "devDependencies": {
     "@types/node": "^22.8.1"

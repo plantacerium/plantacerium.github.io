@@ -29,4 +29,3 @@ title: Rust Best Practices
 * Use ? for readable error propagation. (Error handling).
 * Use async and await for asynchronous code. (Operations).
 * Use for loops to iterate over collections. (Safer operations).
-* 
