@@ -3,15 +3,21 @@ name: Despliegue Neuronal a GitHub Pages
 on:
   push:
     branches: [ main ]
+  # Permite ejecutar este workflow manualmente desde la pestaña Actions
   workflow_dispatch:
+
+# Configuración para evitar despliegues simultáneos que choquen entre sí
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Forzamos Node 24 para evitar la obsolescencia programada de junio 2026
 env:
+  # Forzamos a que las acciones de GitHub usen Node 24 internamente
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -24,21 +30,22 @@ jobs:
       - name: Instalar pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 9 # O la versión que estés usando localmente
+          version: 9 # Asegura compatibilidad con tu entorno local
 
       - name: Configurar Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'pnpm' # Astro y GitHub ahora optimizan el caché para pnpm
+          cache: 'pnpm'
 
       - name: Instalar dependencias
         run: pnpm install --frozen-lockfile
 
-      - name: Instalar, compilar y empaquetar Astro
+      - name: Compilar y empaquetar con Astro
         uses: withastro/action@v3
         with:
-          # ESPECIFICACIÓN CRÍTICA: Cambiamos a pnpm
+          # ESPECIFICACIÓN CRÍTICA: Forzamos la versión aquí para el contenedor de Astro
+          node-version: 24
           package-manager: pnpm
 
   deploy:
