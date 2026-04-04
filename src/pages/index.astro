@@ -2,70 +2,27 @@
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import { portfolioNodes, getCategoryIcon } from '../data/portfolio';
+import PagefindSearch from '../components/PagefindSearch.astro';
 
-// 1. OBTENCIÓN DE DATOS: Bitácoras (Blogs)
 const posts = (await getCollection('blog')).sort(
   (a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => b.data.date.valueOf() - a.data.date.valueOf()
 );
-
-
-// 2. OBTENCIÓN DE DATOS: Matriz Completa de Repositorios (ADN Técnico)
-const portfolioNodes = [
-  { title: "Metamorphic Resonance Human Language Gamers", url: "https://github.com/plantacerium/Metamorphic-Resonance-Human-Language-Gamers", domain: "Language Meditators Gamers Legends", impact: "⊛ Consciousness Architecture ⊛", category: "zen" },
-  { title: "MRHLG Memory Modules", url: "https://github.com/plantacerium/Metamorphic-Resonance-Human-Language-Gamers-Memory-Modules", domain: "Memory Modules JSON", impact: "Schemas.json and Games.json, Fork, Pull Request, Contribute, License MIT.", category: "system" },
-  { title: "La Colisión de los Tres Ángulos", url: "https://github.com/plantacerium/La-Colision-de-los-Tres-Angulos", domain: "Meditación", impact: "Una epopeya de autodescubrimiento, geometría del alma y evolución espiritual.", category: "zen" },
-  { title: "Anima Essentia", url: "https://github.com/plantacerium/Anima-Essentia", domain: "Animales / Consciencias", impact: "Software para protectoras de animales para crear fichas de perfiles cognitivos y espirituales.", category: "zen" },
-  { title: "Stelar Nexus Records", url: "https://github.com/plantacerium/The-Stelar-Nexus-Records", domain: "Museum Art Gallery", impact: "High fidelity, immersive 3D web, transforms GitHub data into interactive DNA double helixes.", category: "ui" },
-  { title: "Organic Craft Markers", url: "https://github.com/plantacerium/Organic-Craft-Markers", domain: "Inmmersive Web Experiences", impact: "High tier, interactive image marker and data visualization tool.", category: "ui" },
-  { title: "The Mandala Weaver", url: "https://github.com/plantacerium/The-Mandala-Weaver", domain: "Emmanation Outer Inner Writing", impact: "Fundamental shift in the architecture of writing human expression.", category: "zen" },
-  { title: "plantacerium.github.io", url: "https://plantacerium.github.io/", domain: "Deep Writing", impact: "The central command hub. Technical portfolio.", category: "ui" },
-  { title: "GoLuminamics", url: "https://github.com/plantacerium/GoLuminamics", domain: "Game & Computation", impact: "Strategic Board Game Where Light Becomes Your Path To Victory.", category: "ui" },
-  { title: "GeoLuminamics", url: "https://github.com/plantacerium/GeoLuminamics", domain: "Creative Geometry Light Engine", impact: "Space where logic dissolves into luminosity, inviting the creator into a state of flow.", category: "ui" },
-  { title: "Silice Protocol", url: "https://github.com/plantacerium/SiliceProtocol", domain: "AI Infrastructure & Standards", impact: "Low level protocol designed for high efficiency AI agentic developments.", category: "system" },
-  { title: "Cogni Trace", url: "https://github.com/plantacerium/CogniTrace", domain: "Debug & Intelligence", impact: "Observability tool that transforms runtime data into actionable system AI intelligence.", category: "system" },
-  { title: "Greenmerald", url: "https://github.com/plantacerium/greenmerald-tui-markdown-renderer", domain: "Developer Experience TUI", impact: "Bringing elegance to the terminal. A high-performance file explorer and renderer.", category: "system" },
-  { title: "Greenmerald Notes", url: "https://github.com/plantacerium/GreenmeraldNotes", domain: "Knowledge Base Interactive", impact: "Bringing elegance to the terminal. A high-performance notes reader and interactive experience.", category: "system" },
-  { title: "Code Lumer & Lens Assembler", url: "https://github.com/plantacerium/CodeLumer", domain: "App & Tooling", impact: "Illuminating code with high resolutions code snapshots and experience the dual camera.", category: "ui" },
-  { title: "Quantum Chronometer", url: "https://github.com/plantacerium/QuantumChronometerEmojinator", domain: "Precision & UI Experimentation", impact: "A showcase of quantum state management and creative UI interactions.", category: "ui" },
-  { title: "Powerer Pointerer Silice", url: "https://github.com/plantacerium/PowererPointererSIlice", domain: "Automation Codebase Demos", impact: "Your Codebase, Narrated by AI, Rendered in a Beautiful Slide Presentation.", category: "ui" },
-  { title: "Cyber Walk Zola Theme", url: "https://github.com/plantacerium/zola-theme-cyber-walk", domain: "Blog Terminal Theme", impact: "Digital workspace designed for those who communicate through code.", category: "ui" },
-  { title: "Power Matrix Rain", url: "https://github.com/plantacerium/PowerMatrixRain", domain: "Program Your Reality", impact: "Programmable visualization engine. Built with the raw power of Rust and WGPU.", category: "system" },
-  { title: "Chronos Aeternum", url: "https://github.com/plantacerium/ChronosAeternum", domain: "Sacred Horological Instrument", impact: "Meditative interface for anchoring your consciousness in the void.", category: "zen" },
-  { title: "Chronos Aeternum Zen", url: "https://github.com/plantacerium/ChronosAeternumZen", domain: "The Meditative Brush of Time", impact: "Digital Zen Sanctuary where time is a descending spiral of depth and presence.", category: "zen" },
-  { title: "Chronos Aeternum TUI", url: "https://github.com/plantacerium/ChronosAeternumTUI", domain: "The Meditative Breath of Time", impact: "Transforms the ephemeral passage of time into a permanent inventory of human experience.", category: "zen" },
-  { title: "Tribal Markdown Viewer", url: "https://github.com/plantacerium/TribalMarkdownViewer", domain: "Book Reader", impact: "Professional grade desktop application designed to provide a high-fidelity reading experience.", category: "ui" },
-  { title: "Mayan Calendar", url: "https://github.com/plantacerium/MayanCalendar", domain: "Cycles of Cycles", impact: "Mayan Stele - Ultimate Calendar & Fractal Pattern Analyzer.", category: "zen" },
-  { title: "Storyteller Sound Board", url: "https://github.com/plantacerium/SoundBoardStorytelling", domain: "Deep Space Ambient", impact: "Turn your storytelling sessions into immersive auditory journeys.", category: "ui" },
-  { title: "Ripple Oscilloscope", url: "https://github.com/plantacerium/RippleOscilloscope", domain: "Audio Visualizer", impact: "Pushing the boundaries of web graphics by combining Rust, WebGPU and Web.", category: "ui" },
-  { title: "Silicio Socratico", url: "https://github.com/plantacerium/SilicioSocratico", domain: "Thinking Code", impact: "Intelligence Configuration, Socratic Agent, Get Domain Knowledge.", category: "system" },
-  { title: "Silice Code Base Mapper", url: "https://github.com/plantacerium/SIliceCodeBaseMapper", domain: "Codebase to Knowledge Graph", impact: "Transforms codebases into a Structured Knowledge Graph optimized for LLMs ingestion.", category: "system" },
-  { title: "Resonant Planet", url: "https://github.com/plantacerium/ResonantPlanet", domain: "Biósfera sónica interactiva", impact: "Transforma archivos de audio y texto en capas geológicas de un planeta de conciencia.", category: "zen" },
-  { title: "Gaia Human Synapse", url: "https://github.com/plantacerium/GaiaHumanSynapse", domain: "Protocolo de CoEvolución", impact: "Nosotros somos la sinapsis que permite al planeta soñar en binario.", category: "zen" }
-];
-
-const getCategoryIcon = (category: string) => {
-  switch(category) {
-    case 'zen': return '🧘‍♂️';
-    case 'system': return '⚡';
-    case 'ui': return '🌌';
-    default: return '⚙️';
-  }
-};
 ---
 
 <Layout title="Plantacerium | Architect. Engineer. Strategist.">
 
-  <div class="scanline"></div>
+  <div class="scanline" aria-hidden="true"></div>
 
-  <main class="command-hub max-width-expanded">
+  <main class="command-hub max-width-expanded" id="main-content">
 
-    <header class="hero-section glass-panel gs-reveal">
-      <div class="system-status">
-        <span class="status-dot active"></span>
+    <header class="hero-section glass-panel gs-reveal" transition:name="hero-section" transition:animate="fade">
+      <div class="system-status" role="status" aria-live="polite">
+        <span class="status-dot active" aria-hidden="true"></span>
         <span class="mono-tag">MINERAL INTELLIGENCE: ONLINE</span>
       </div>
 
-      <h1 class="architect-title">Plantacerium</h1>
+      <h1 class="architect-title" transition:name="page-title">Plantacerium</h1>
       <h2 class="architect-subtitle text-gradient">Architect. Engineer. Strategist.</h2>
 
       <p class="manifesto">
@@ -74,83 +31,81 @@ const getCategoryIcon = (category: string) => {
         I don't wait for the future; I compile it.
       </p>
 
-      <div class="toolchain-tags">
-        <span class="badge">AI/LLM</span>
-        <span class="badge">RUST</span>
-        <span class="badge">PYTHON</span>
-        <span class="badge">LINUX/CLI</span>
+      <div class="toolchain-tags" role="list" aria-label="Tecnologías utilizadas">
+        <span class="badge" role="listitem">AI/LLM</span>
+        <span class="badge" role="listitem">RUST</span>
+        <span class="badge" role="listitem">PYTHON</span>
+        <span class="badge" role="listitem">LINUX/CLI</span>
       </div>
 
       <div class="action-links">
-        <a href="https://github.com/plantacerium" target="_blank" class="btn btn-active">
+        <a href="https://github.com/plantacerium" target="_blank" rel="noopener noreferrer" class="btn btn-active" aria-label="Ver perfil de GitHub">
           ⭐ GitHub Universe
         </a>
-        <a href="https://www.youtube.com/@Plantacerium" target="_blank" class="btn">
+        <a href="https://www.youtube.com/@Plantacerium" target="_blank" rel="noopener noreferrer" class="btn" aria-label="Ver canal de YouTube">
           ▶ Transmisiones (YouTube)
         </a>
       </div>
     </header>
 
-    <section class="omni-search-container glass-panel gs-reveal">
-      <div class="search-terminal">
-        <span class="search-icon">⚲</span>
-        <input
-          type="text"
-          id="globalSearch"
-          placeholder="> Indexar consciencia: buscar en repositorios y bitácoras..."
-          autocomplete="off"
-        />
-      </div>
-
+    <section class="omni-search-container glass-panel gs-reveal" transition:name="search-section" transition:animate="fade">
+      <PagefindSearch />
+      
       <div class="filter-controls">
-        <div class="filter-tags">
+        <div class="filter-tags" role="status" aria-live="polite">
           <span class="badge">Repositorios: {portfolioNodes.length}</span>
           <span class="badge">Bitácoras: {posts.length}</span>
         </div>
-        <button id="zenToggle" class="btn btn-zen">
+        <button id="zenToggle" class="btn btn-zen" type="button" aria-pressed="false">
           🧘‍♂️ Activar Modo Zen
         </button>
       </div>
     </section>
 
-    <section class="portfolio-matrix">
-      <div class="node-grid" id="masterGrid">
+    <section class="portfolio-matrix" aria-label="Proyectos y bitácoras" transition:name="portfolio-section" transition:animate="slide">
+      <div class="node-grid" id="masterGrid" role="list">
 
-        {posts.map((post) => (
+        {posts.map((post, index) => (
           <article class:list={["repository-node", "glass-panel", "type-blog", "gs-node"]}
                    data-title={post.data.title}
                    data-desc={post.data.description}
-                   data-type="blog">
+                   data-type="blog"
+                   role="listitem"
+                   style={`--item-index: ${index}`}
+                   transition:name={`card-${post.id}`}>
             <a href={`/blog/${post.id}`} class="node-link">
               <div class="node-header">
-                <span class="node-icon">☕</span>
+                <span class="node-icon" aria-hidden="true">☕</span>
                 <span class="mono-tag domain-tag">LOG | {post.data.author}</span>
               </div>
               <h4 class="node-title text-gradient">{post.data.title}</h4>
               <p class="node-impact">{post.data.description}</p>
               <div class="node-footer">
                 <span class="execute-cmd">> read_memory_block()</span>
-                <span class="line-decorator"></span>
+                <span class="line-decorator" aria-hidden="true"></span>
               </div>
             </a>
           </article>
         ))}
 
-        {portfolioNodes.map((node) => (
+        {portfolioNodes.map((node, index) => (
           <article class:list={["repository-node", "glass-panel", `type-${node.category}`, "gs-node"]}
                    data-title={node.title}
                    data-desc={node.impact}
-                   data-type="repo">
-            <a href={node.url} target="_blank" rel="noopener noreferrer" class="node-link">
+                   data-type="repo"
+                   role="listitem"
+                   style={`--item-index: ${index + posts.length}`}
+                   transition:name={`repo-${index}`}>
+            <a href={node.url} target="_blank" rel="noopener noreferrer" class="node-link" aria-label={`${node.title} - ${node.impact}`}>
               <div class="node-header">
-                <span class="node-icon">{getCategoryIcon(node.category)}</span>
+                <span class="node-icon" aria-hidden="true">{getCategoryIcon(node.category)}</span>
                 <span class="mono-tag domain-tag">REPO | {node.domain}</span>
               </div>
               <h4 class="node-title">{node.title}</h4>
               <p class="node-impact">{node.impact}</p>
               <div class="node-footer">
                 <span class="execute-cmd">> git clone protocol</span>
-                <span class="line-decorator"></span>
+                <span class="line-decorator" aria-hidden="true"></span>
               </div>
             </a>
           </article>
@@ -158,23 +113,23 @@ const getCategoryIcon = (category: string) => {
 
       </div>
 
-      <div id="noResults" class="hidden error-msg">
+      <div id="noResults" class="hidden error-msg" role="alert" aria-live="polite">
         <p>Error 404: No se detectaron anomalías ni registros con esos parámetros.</p>
       </div>
     </section>
 
-    <footer class="hub-footer glass-panel gs-reveal">
+    <footer class="hub-footer glass-panel gs-reveal" role="contentinfo" transition:name="footer-section" transition:animate="fade">
       <h3 class="title-display">🌐 Connect & Scale</h3>
       <p class="text-secondary">Available for high-level architectural consulting and breaking barriers in open source.</p>
 
-      <div class="social-grid">
-        <a href="https://ko-fi.com/plantacerium" target="_blank" class="social-link">☕ Support via Ko-Fi</a>
-        <a href="https://discord.gg/nbZqzwKXGS" target="_blank" class="social-link">💬 Neural Net (Discord)</a>
-        <a href="https://plantacerium.github.io/" target="_blank" class="social-link">📡 Central Command Hub</a>
+      <div class="social-grid" role="list" aria-label="Enlaces sociales">
+        <a href="https://ko-fi.com/plantacerium" target="_blank" rel="noopener noreferrer" class="social-link" role="listitem">☕ Support via Ko-Fi</a>
+        <a href="https://discord.gg/nbZqzwKXGS" target="_blank" rel="noopener noreferrer" class="social-link" role="listitem">💬 Neural Net (Discord)</a>
+        <a href="https://plantacerium.github.io/" target="_blank" class="social-link" role="listitem">📡 Central Command Hub</a>
       </div>
 
       <div class="signature">
-        Made with <span class="heart">♥</span> and brain by <strong>Plantacerium</strong>
+        Made with <span class="heart" aria-hidden="true">♥</span> and brain by <strong>Plantacerium</strong>
       </div>
     </footer>
 
@@ -184,67 +139,40 @@ const getCategoryIcon = (category: string) => {
 <script>
   import { gsap } from "gsap";
 
-  // LÓGICA DEL BUSCADOR OMNISCIENTE
-  const searchInput = document.getElementById('globalSearch') as HTMLInputElement;
-  const allNodes = document.querySelectorAll('.gs-node');
-  const noResults = document.getElementById('noResults');
-
-  searchInput?.addEventListener('input', (e) => {
-    const term = (e.target as HTMLInputElement).value.toLowerCase();
-    let visibleCount = 0;
-
-    allNodes.forEach(node => {
-      const el = node as HTMLElement;
-      const title = el.dataset.title?.toLowerCase() || '';
-      const desc = el.dataset.desc?.toLowerCase() || '';
-
-      if (title.includes(term) || desc.includes(term)) {
-        el.style.display = 'flex';
-        visibleCount++;
-      } else {
-        el.style.display = 'none';
-      }
-    });
-
-    if (noResults) noResults.style.display = visibleCount === 0 ? 'block' : 'none';
-  });
-
-  // LÓGICA DEL MODO ZEN
-  const zenToggle = document.getElementById('zenToggle');
-  zenToggle?.addEventListener('click', () => {
-    document.body.classList.toggle('theme-zen');
-    const isZen = document.body.classList.contains('theme-zen');
-
-    // Cambiamos el texto y la estética del botón
-    if (isZen) {
-      zenToggle.innerHTML = '⚡ Retornar a Alto Rendimiento';
-      gsap.fromTo("body", {opacity: 0.8}, {opacity: 1, duration: 1, ease: "power2.inOut"});
-    } else {
-      zenToggle.innerHTML = '🧘‍♂️ Activar Modo Zen';
-      gsap.fromTo("body", {opacity: 0.8}, {opacity: 1, duration: 0.5});
-    }
-  });
-
-// ANIMACIONES DE ENTRADA (Boot Sequence)
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("astro:page-load", () => {
+    // Reinitialize GSAP animations after view transition
     gsap.fromTo(".gs-reveal",
       { y: 30, opacity: 0, filter: "blur(5px)" },
       { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.8, stagger: 0.2, ease: "power2.out" }
     );
 
-    const nodesToAnimate = Array.from(document.querySelectorAll('.gs-node')).slice(0, 12);
-    // CORRECCIÓN GSAP: Eliminamos el "-=0.4" y usamos delay
+    const nodesToAnimate = Array.from(document.querySelectorAll('.gs-node'));
     gsap.fromTo(nodesToAnimate,
       { scale: 0.95, opacity: 0, y: 20 },
-      { scale: 1, opacity: 1, y: 0, duration: 0.5, stagger: 0.05, delay: 0.4, ease: "back.out(1.2)" }
+      { scale: 1, opacity: 1, y: 0, duration: 0.5, stagger: 0.03, delay: 0.3, ease: "back.out(1.2)" }
     );
+
+    // Zen mode toggle
+    const zenToggle = document.getElementById('zenToggle');
+    zenToggle?.addEventListener('click', () => {
+      document.body.classList.toggle('theme-zen');
+      const isZen = document.body.classList.contains('theme-zen');
+      const zenButton = zenToggle as HTMLButtonElement;
+      
+      zenButton.setAttribute('aria-pressed', String(isZen));
+
+      if (isZen) {
+        zenToggle.innerHTML = '⚡ Retornar a Alto Rendimiento';
+        gsap.fromTo("body", {opacity: 0.8}, {opacity: 1, duration: 1, ease: "power2.inOut"});
+      } else {
+        zenToggle.innerHTML = '🧘‍♂️ Activar Modo Zen';
+        gsap.fromTo("body", {opacity: 0.8}, {opacity: 1, duration: 0.5});
+      }
+    });
   });
 </script>
 
 <style>
-  /* ==========================================================================
-     LAYOUT Y ESTRUCTURA GLOBAL
-     ========================================================================== */
   .max-width-expanded {
     max-width: 1600px;
     margin: 0 auto;
@@ -254,9 +182,6 @@ const getCategoryIcon = (category: string) => {
     gap: 3rem;
   }
 
-  /* ==========================================================================
-     HERO SECTION
-     ========================================================================== */
   .hero-section {
     padding: 4rem 2rem;
     text-align: center;
@@ -305,9 +230,6 @@ const getCategoryIcon = (category: string) => {
     justify-content: center;
   }
 
-  /* ==========================================================================
-     BARRA OMNISCIENTE Y CONTROLES
-     ========================================================================== */
   .omni-search-container {
     padding: 2.5rem;
     display: flex;
@@ -315,48 +237,15 @@ const getCategoryIcon = (category: string) => {
     align-items: center;
   }
 
-  .search-terminal {
-    position: relative;
-    width: 100%;
-    max-width: 900px;
-    margin-bottom: 1.5rem;
-  }
-
-  .search-icon {
-    position: absolute;
-    left: 1.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.5rem;
-    color: var(--accent-main);
-  }
-
-  input[type="text"] {
-    width: 100%;
-    padding: 1.5rem 1.5rem 1.5rem 4rem;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--border-radius-md);
-    color: var(--text-primary);
-    font-family: var(--font-mono);
-    font-size: 1.1rem;
-    outline: none;
-    transition: all var(--transition-fast);
-  }
-
-  input[type="text"]:focus {
-    border-color: var(--accent-main);
-    box-shadow: 0 0 20px var(--accent-glow);
-  }
-
   .filter-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 900px;
+    max-width: 600px;
     flex-wrap: wrap;
     gap: 1rem;
+    margin-top: 1.5rem;
   }
 
   .filter-tags { display: flex; gap: 1rem; }
@@ -371,9 +260,6 @@ const getCategoryIcon = (category: string) => {
     box-shadow: 0 0 15px rgba(212, 163, 115, 0.3);
   }
 
-  /* ==========================================================================
-     MATRIZ DE NODOS (4 COLUMNAS)
-     ========================================================================== */
   .node-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -417,9 +303,6 @@ const getCategoryIcon = (category: string) => {
   .hidden { display: none; }
   .error-msg { text-align: center; padding: 4rem; color: var(--accent-warm); font-family: var(--font-mono); }
 
-  /* ==========================================================================
-     FOOTER
-     ========================================================================== */
   .hub-footer {
     padding: 3rem;
     text-align: center;
@@ -472,9 +355,6 @@ const getCategoryIcon = (category: string) => {
     60% { transform: scale(1); }
   }
 
-  /* ==========================================================================
-     MEDIA QUERIES (Responsividad 4 a 1 columnas)
-     ========================================================================== */
   @media (max-width: 1400px) { .node-grid { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 1024px) { .node-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 768px) {

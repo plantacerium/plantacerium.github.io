@@ -1,15 +1,21 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title: string;
   description?: string;
+  ogImage?: string;
 }
 
 const { 
   title, 
-  description = "Bitácora de una Arquitecta de Sistemas. Explorando la ingeniería de software, orquestación de agentes IA y la consciencia en la era digital." 
+  description = "Bitácora de una Arquitecta de Sistemas. Explorando la ingeniería de software, orquestación de agentes IA y la consciencia en la era digital.",
+  ogImage = "/og-image.png",
 } = Astro.props;
+
+const siteUrl = "https://plantacerium.github.io";
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
 ---
 
 <!DOCTYPE html>
@@ -18,42 +24,71 @@ const {
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width" />
-
-    <link rel="icon" type="image" href="/Plantacerium.png" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="apple-touch-icon" href="/Plantacerium.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalUrl} />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`${siteUrl}${ogImage}`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="es_ES" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${siteUrl}${ogImage}`} />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
     
     <title>{title}</title>
+    
+    <!-- View Transitions Client Router -->
+    <ClientRouter />
   </head>
   <body>
-    <nav class="main-nav glass-panel">
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+
+    <nav class="main-nav glass-panel" role="navigation" aria-label="Navegación principal">
       <div class="nav-content">
-        <a href="/" class="brand">
-          <span class="icon">🌌</span>
+        <a href="/" class="brand" aria-label="Plantacerium - Página principal">
+          <span class="icon" aria-hidden="true">🌌</span>
           <span class="logo-text">Spaceship <span class="text-caramel">Command Hub</span></span>
         </a>
         
-        <ul class="nav-links">
-          <li><a href="/">Radar Central</a></li>
-          <li><a href="/tripulacion">Tripulacion Bio & Silice </a></li>
-          <li><a href="/blog">Bitacora Estelar</a></li>
+        <ul class="nav-links" role="list">
+          <li><a href="/" aria-label="Radar Central - Página de inicio">Radar Central</a></li>
+          <li><a href="/tripulacion" aria-label="Tripulación Bio & Silicio">Tripulacion Bio & Silice </a></li>
+          <li><a href="/blog" aria-label="Bitácora Estelar - Blog">Bitacora Estelar</a></li>
         </ul>
         
-        <div class="zen-indicator" title="Estado del Sistema: Sereno">
-          <div class="breathing-circle"></div>
+        <div class="zen-indicator" title="Estado del Sistema: Sereno" role="status" aria-label="Indicador de modo zen">
+          <div class="breathing-circle" aria-hidden="true"></div>
           <span class="zen-text">Zen Mode</span>
         </div>
       </div>
     </nav>
 
-    <div class="page-wrapper">
+    <div class="page-wrapper" id="main-content" tabindex="-1">
       <slot />
     </div>
 
-    <footer class="site-footer">
+    <footer class="site-footer" role="contentinfo">
       <div class="footer-content">
         <p class="footer-text">
           Sistemas orquestados con <span class="text-neon-cyan">precisión algorítmica</span> y <span class="text-caramel">calma humana</span>.
@@ -66,7 +101,188 @@ const {
   </body>
 </html>
 
-<style>
+<script is:inline>
+  // Initialize theme on page load and after transitions
+  function initTheme() {
+    const zenButton = document.getElementById('zenToggle');
+    if (zenButton) {
+      zenButton.addEventListener('click', () => {
+        document.body.classList.toggle('theme-zen');
+        const isZen = document.body.classList.contains('theme-zen');
+        zenButton.setAttribute('aria-pressed', String(isZen));
+        
+        if (isZen) {
+          zenButton.innerHTML = '⚡ Retornar a Alto Rendimiento';
+        } else {
+          zenButton.innerHTML = '🧘‍♂️ Activar Modo Zen';
+        }
+      });
+    }
+  }
+
+  // Run on initial load
+  initTheme();
+  
+  // Re-run after each view transition
+  document.addEventListener('astro:page-load', initTheme);
+</script>
+
+<style is:global>
+  /* ==========================================================================
+     VIEW TRANSITION ANIMATIONS
+     ========================================================================== */
+  
+  /* Fade animation for main content */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Slide animations for navigation */
+  @keyframes slide-from-right {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-to-left {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+  }
+
+  @keyframes slide-from-left {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-to-right {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+  }
+
+  /* Scale animation for cards */
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Holographic glitch effect */
+  @keyframes glitch-in {
+    0% {
+      opacity: 0;
+      transform: translateX(-20px) skewX(5deg);
+      filter: blur(4px);
+    }
+    30% {
+      opacity: 0.7;
+      transform: translateX(5px) skewX(-2deg);
+      filter: blur(2px);
+    }
+    60% {
+      opacity: 0.9;
+      transform: translateX(-2px) skewX(1deg);
+      filter: blur(1px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) skewX(0);
+      filter: blur(0);
+    }
+  }
+
+  /* View transition defaults */
+  ::view-transition-old(root) {
+    animation: fade-out 0.2s ease-out forwards;
+  }
+
+  ::view-transition-new(root) {
+    animation: fade-in 0.3s ease-out forwards;
+  }
+
+  /* Main content slide transition */
+  ::view-transition-old(main),
+  ::view-transition-new(main) {
+    animation-duration: 0.3s;
+  }
+
+  /* Navigation bar stays visible */
+  .main-nav {
+    view-transition-name: nav-header;
+  }
+
+  ::view-transition-old(nav-header),
+  ::view-transition-new(nav-header) {
+    animation: none;
+  }
+
+  /* Page title transition */
+  .architect-title {
+    view-transition-name: page-title;
+  }
+
+  ::view-transition-old(page-title),
+  ::view-transition-new(page-title) {
+    animation: glitch-in 0.4s ease-out;
+  }
+
+  /* Reduce motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root),
+    ::view-transition-old(main),
+    ::view-transition-new(main),
+    ::view-transition-old(page-title),
+    ::view-transition-new(page-title) {
+      animation: none;
+    }
+  }
+
   /* ==========================================================================
      NAVEGACIÓN (HUD SUPERIOR)
      ========================================================================== */
@@ -78,7 +294,7 @@ const {
     border-top: none;
     border-left: none;
     border-right: none;
-    background: rgba(9, 9, 11, 0.8); /* Ligeramente más oscuro para la cabecera */
+    background: rgba(9, 9, 11, 0.8);
   }
 
   .nav-content {
@@ -131,7 +347,6 @@ const {
     color: var(--ai-cyan);
   }
 
-  /* Animación de subrayado en hover */
   .nav-links a::after {
     content: '';
     position: absolute;
@@ -141,7 +356,7 @@ const {
     left: 0;
     background-color: var(--ai-cyan);
     transition: width var(--transition-fast);
-    box-shadow: 0 0 8px var(--ai-glow-cyan);
+    box-shadow: 0 0 8px var(--ai-cyan);
   }
 
   .nav-links a:hover::after {
@@ -167,7 +382,6 @@ const {
     color: var(--stardust);
   }
 
-  /* Animación de respiración profunda (4 segundos inhalar, 4 exhalar) */
   @keyframes breathe {
     0%, 100% { transform: scale(0.8); opacity: 0.4; box-shadow: 0 0 0 rgba(212, 163, 115, 0); }
     50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px var(--coffee-caramel); }
@@ -185,7 +399,7 @@ const {
      CUERPO Y PIE DE PÁGINA
      ========================================================================== */
   .page-wrapper {
-    min-height: calc(100vh - 160px); /* Altura total menos nav y footer */
+    min-height: calc(100vh - 160px);
     display: flex;
     flex-direction: column;
   }
@@ -212,10 +426,12 @@ const {
 
   .copyright {
     font-size: 0.8rem;
-    color: #52525b; /* Gris oscuro para no distraer */
+    color: #52525b;
   }
 
-  /* Responsividad básica para pantallas pequeñas */
+  /* ==========================================================================
+     RESPONSIVIDAD BÁSICA
+     ========================================================================== */
   @media (max-width: 768px) {
     .nav-content {
       flex-direction: column;
@@ -228,7 +444,7 @@ const {
     }
     
     .zen-indicator {
-      display: none; /* Ocultamos el indicador zen en móviles para ahorrar espacio */
+      display: none;
     }
   }
 </style>

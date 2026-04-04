@@ -1,0 +1,331 @@
+---
+/**
+ * Pagefind Search Component
+ * Provides SEO-friendly search powered by Pagefind
+ */
+---
+
+<div class="search-container" id="pagefind-search">
+  <div class="search-wrapper">
+    <div class="search-input-wrapper">
+      <span class="search-icon" aria-hidden="true">⚲</span>
+      <input
+        type="search"
+        id="pagefind-search-input"
+        placeholder="> Buscar en el archivo..."
+        aria-label="Buscar en el archivo"
+        autocomplete="off"
+      />
+    </div>
+    <div id="search-results" class="search-results" role="region" aria-label="Resultados de búsqueda"></div>
+  </div>
+</div>
+
+<script is:inline>
+  // Pagefind search functionality
+  async function initPagefindSearch() {
+    const searchInput = document.getElementById('pagefind-search-input');
+    const resultsContainer = document.getElementById('search-results');
+    
+    if (!searchInput || !resultsContainer) return;
+    
+    let pagefind = null;
+    
+    // Try to load pagefind (only available in production build)
+    try {
+      pagefind = await import('/pagefind/pagefind.js');
+      await pagefind.init();
+    } catch (e) {
+      // Pagefind not available in dev mode
+      console.log('Pagefind not available - search requires production build');
+      resultsContainer.innerHTML = '<p class="search-info">🔍 La búsqueda está disponible en la versión de producción (pnpm build)</p>';
+      return;
+    }
+    
+    let debounceTimer = null;
+    
+    searchInput.addEventListener('input', async (e) => {
+      const query = e.target.value.trim();
+      
+      // Clear previous timer
+      if (debounceTimer) clearTimeout(debounceTimer);
+      
+      // Debounce search
+      debounceTimer = setTimeout(async () => {
+        if (query.length < 2) {
+          resultsContainer.innerHTML = '';
+          resultsContainer.classList.remove('active');
+          return;
+        }
+        
+        resultsContainer.classList.add('active');
+        resultsContainer.innerHTML = '<div class="search-loading">⟳ Buscando...</div>';
+        
+        try {
+          const search = await pagefind.search(query);
+          
+          if (search.results.length === 0) {
+            resultsContainer.innerHTML = `
+              <div class="search-empty">
+                <span class="search-empty-icon">🔍</span>
+                <p>No se encontraron resultados para "<strong>${query}</strong>"</p>
+              </div>
+            `;
+            return;
+          }
+          
+          const results = await Promise.all(
+            search.results.slice(0, 8).map(r => r.data())
+          );
+          
+          let html = `<div class="search-results-header">
+            <span class="result-count">${search.results.length} resultado${search.results.length !== 1 ? 's' : ''}</span>
+          </div>`;
+          
+          results.forEach(result => {
+            const url = new URL(result.url);
+            const isBlog = url.pathname.includes('/blog/');
+            const icon = isBlog ? '☕' : '📁';
+            const type = isBlog ? 'LOG' : 'REPO';
+            
+            html += `
+              <a href="${result.url}" class="search-result-item">
+                <div class="result-icon">${icon}</div>
+                <div class="result-content">
+                  <div class="result-meta">${type}</div>
+                  <h4 class="result-title">${result.meta?.title || 'Sin título'}</h4>
+                  <p class="result-excerpt">${result.excerpt || ''}</p>
+                </div>
+              </a>
+            `;
+          });
+          
+          if (search.results.length > 8) {
+            html += `<div class="search-more">+${search.results.length - 8} más resultados</div>`;
+          }
+          
+          resultsContainer.innerHTML = html;
+          
+          // Close on result click
+          resultsContainer.querySelectorAll('.search-result-item').forEach(item => {
+            item.addEventListener('click', () => {
+              resultsContainer.classList.remove('active');
+              searchInput.value = '';
+            });
+          });
+          
+        } catch (error) {
+          resultsContainer.innerHTML = '<p class="search-error">Error en la búsqueda</p>';
+        }
+      }, 300);
+    });
+    
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#pagefind-search') && !e.target.closest('.search-trigger')) {
+        resultsContainer.classList.remove('active');
+      }
+    });
+    
+    // Close on Escape
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        resultsContainer.classList.remove('active');
+        searchInput.blur();
+      }
+    });
+  }
+  
+  // Initialize on page load
+  initPagefindSearch();
+  
+  // Re-initialize after view transitions
+  document.addEventListener('astro:page-load', initPagefindSearch);
+</script>
+
+<style>
+  .search-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .search-wrapper {
+    position: relative;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    color: var(--accent-main);
+    pointer-events: none;
+  }
+
+  #pagefind-search-input {
+    width: 100%;
+    padding: 1.5rem 1.5rem 1.5rem 4rem;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    outline: none;
+    transition: all var(--transition-fast);
+  }
+
+  #pagefind-search-input:focus {
+    border-color: var(--accent-main);
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  #pagefind-search-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  /* Clear button for search */
+  #pagefind-search-input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .search-results {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    background: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--border-radius-md);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .search-results.active {
+    max-height: 500px;
+    overflow-y: auto;
+    opacity: 1;
+  }
+
+  .search-results-header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--panel-border);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .search-loading,
+  .search-empty,
+  .search-error,
+  .search-info {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+  }
+
+  .search-empty-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .search-result-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--panel-border);
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--transition-fast);
+  }
+
+  .search-result-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .search-result-item:last-child {
+    border-bottom: none;
+  }
+
+  .result-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .result-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .result-meta {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--accent-main);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.25rem;
+  }
+
+  .result-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem;
+    line-height: 1.3;
+  }
+
+  .result-excerpt {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Highlight matched text */
+  .result-excerpt mark {
+    background: rgba(0, 242, 255, 0.3);
+    color: var(--accent-main);
+    padding: 0 0.2em;
+    border-radius: 2px;
+  }
+
+  .search-more {
+    padding: 0.75rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--panel-border);
+  }
+
+  @media (max-width: 768px) {
+    .search-results {
+      position: fixed;
+      top: auto;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-height: 60vh;
+      border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+    }
+  }
+</style>

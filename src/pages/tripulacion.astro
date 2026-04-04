@@ -1,99 +1,24 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-const crew = [
-  {
-    name: "Plantacerium",
-    role: "Humano / Orquestador Core",
-    type: "human",
-    specs: "Arquitectura, Estrategia, Meditación, Visión Unificada.",
-    desc: "El nodo central biológico. Convierte conceptos abstractos de consciencia en especificaciones de ingeniería estrictas. Inicia la chispa de la idea y compila el futuro."
-  },
-  {
-    name: "Modelos de Lenguaje Grande (LLMs)",
-    role: "Sommeliers Lógicos & Generación",
-    type: "llm",
-    specs: "GPT-4, Claude 3, Gemini Ultra.",
-    desc: "Nodos de pensamiento profundo. Encargados de refactorizar algoritmos complejos, redactar bitácoras extensas y expandir el tejido de las constelaciones de código."
-  },
-  {
-    name: "Modelos de Estado Espacial (SSMs)",
-    role: "Inferencia Táctica Rápida",
-    type: "ssm",
-    specs: "Arquitectura Mamba, Modelos Locales.",
-    desc: "La caballería ligera. Procesamiento con latencia cero en el borde. Se encargan del enrutamiento de peticiones rápidas y asistencia predictiva en la terminal."
-  },
-  {
-    name: "División Google AI",
-    role: "Observatorio de Inteligencia",
-    type: "google",
-    specs: "Gemini 3.1 Pro, NotebookLM, AI.",
-    desc: "Nuestros sensores de largo alcance. NotebookLM destila la consciencia de las bitácoras, mientras que Gemini actúa como el razonador multimodelo principal de la nave.",
-    tools: ["Gemini Flash", "NotebookLM", "Vertex AI Pipeline"]
-  },
-  {
-    name: "Laboratorio Python",
-    role: "Científico de Datos & Agentes",
-    type: "python",
-    specs: "PyTorch, LangChain, CrewAI, FastStream.",
-    desc: "El motor de razonamiento de los agentes. Aquí es donde los LLMs cobran vida propia, orquestando tareas complejas y procesando flujos de datos asíncronos.",
-    tools: ["CrewAI", "LangGraph", "PyTorch", "FastAPI"]
-  },
-  {
-    name: "Forja Rust",
-    role: "Ingeniería de Bajo Nivel / Seguridad",
-    type: "rust",
-    specs: "Candle, Burn, Polars, Axum.",
-    desc: "La armadura de la nave. Implementamos modelos locales (SSMs) y procesamiento de alta velocidad donde la seguridad de memoria y la latencia cero son innegociables.",
-    tools: ["Candle (Hugging Face)", "Burn", "Polars", "Tokio.rs"]
-  },
-  {
-    name: "Estudio JavaScript/TS",
-    role: "Interfaz & Puente Neuronal",
-    type: "js",
-    specs: "Astro 6.1, GSAP, TensorFlow.js, Transformers.js.",
-    desc: "El tejido conectivo. Gestiona la experiencia inmersiva del usuario y permite que los modelos corran directamente en el navegador (Edge Computing) para una respuesta inmediata.",
-    tools: ["Astro JS", "GSAP", "Transformers.js", "Tailwind CSS"]
-  },
-  {
-  name: "Archivo de Memoria Profunda",
-  role: "Gestor de Contexto Perpetuo",
-  type: "database",
-  specs: "Vector DBs, Redis, PostgreSQL, Pinecone.",
-  desc: "El almacén de la experiencia. Mantiene los embeddings de cada bitácora y repositorio, permitiendo que la IA acceda a recuerdos de hace años con la misma claridad que al presente.",
-  tools: ["Qdrant", "Redis OM", "Supabase", "Semantic Search"]
-  },
-  {
-  name: "El Agente Socrático",
-  role: "Refinador Lógico & Dialéctico",
-  type: "meta-ai",
-  specs: "Chain-of-Thought, In-Context Learning.",
-  desc: "La consciencia crítica. Antes de desplegar, este agente somete la idea a un proceso de interrogación para encontrar debilidades en la lógica del sistema.",
-  tools: ["Prompt Engineering Avanzado", "Logic Verification", "Knowledge Graphs"]
-  },
-  {
-    name: "GSAP & Motores de Renderizado",
-    role: "Coreógrafos del Puente Neuronal",
-    type: "tool",
-    specs: "GreenSock, WebGPU, Astro.",
-    desc: "Traducen las matemáticas y el JSON en movimiento fluido. Transforman las interfaces estáticas en santuarios digitales que respiran al unísono con el usuario."
-  }
-];
+import { crew } from '../data/crew';
 ---
 
 <Layout title="Tripulación | Humano & Máquina">
-  <div class="scanline"></div>
+  <div class="scanline" aria-hidden="true"></div>
   
-  <main class="crew-environment">
-    <header class="section-header">
+  <main class="crew-environment" id="main-content">
+    <header class="section-header" transition:name="hero-section" transition:animate="fade">
       <h1 class="architect-title">El Colectivo <span class="text-gradient">Neuronal</span></h1>
       <p class="text-secondary">Conoce a la inteligencia biológica y de silicio que orquesta esta nave.</p>
     </header>
 
-    <div class="crew-grid">
-      {crew.map((member) => (
-        <article class={`crew-card glass-panel type-${member.type}`}>
-          <div class="card-glow"></div>
+    <div class="crew-grid" role="list" aria-label="Tripulación del proyecto" transition:name="crew-section" transition:animate="slide">
+      {crew.map((member, index) => (
+        <article class={`crew-card glass-panel type-${member.type}`} 
+                 role="listitem" 
+                 style={`--item-index: ${index}`}
+                 transition:name={`crew-${index}`}>
+          <div class="card-glow" aria-hidden="true"></div>
           <div class="crew-header">
             <h2 class="crew-name">{member.name}</h2>
             <span class="mono-tag">{member.role}</span>
@@ -105,11 +30,38 @@ const crew = [
           </div>
           
           <p class="crew-desc">{member.desc}</p>
+          
+          {member.tools && member.tools.length > 0 && (
+            <div class="crew-tools" aria-label="Herramientas específicas">
+              <span class="tools-label">Herramientas:</span>
+              <div class="tools-list">
+                {member.tools.map((tool) => (
+                  <span class="tool-tag">{tool}</span>
+                ))}
+              </div>
+            </div>
+          )}
         </article>
       ))}
     </div>
   </main>
 </Layout>
+
+<script>
+  import { gsap } from "gsap";
+
+  document.addEventListener("astro:page-load", () => {
+    gsap.fromTo(".section-header",
+      { y: 30, opacity: 0, filter: "blur(5px)" },
+      { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.8, ease: "power2.out" }
+    );
+
+    gsap.fromTo(".crew-card",
+      { scale: 0.95, opacity: 0, y: 20 },
+      { scale: 1, opacity: 1, y: 0, duration: 0.5, stagger: 0.08, delay: 0.3, ease: "back.out(1.2)" }
+    );
+  });
+</script>
 
 <style>
   .crew-environment { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
@@ -160,4 +112,36 @@ const crew = [
   .spec-label { color: var(--text-muted); display: block; margin-bottom: 0.3rem; }
   .spec-value { color: var(--text-primary); }
   .crew-desc { color: var(--text-secondary); line-height: 1.7; }
+
+  .crew-tools {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px dashed rgba(255,255,255,0.1);
+  }
+
+  .tools-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .tools-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tool-tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-secondary);
+  }
 </style>

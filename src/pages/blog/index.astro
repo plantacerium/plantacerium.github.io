@@ -2,20 +2,19 @@
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 
-// Obtener y ordenar las bitácoras por fecha (de más reciente a más antigua)
 const posts = (await getCollection('blog')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
 ---
 
 <Layout title="Bitácoras | El Archivo Neuronal">
-  <div class="scanline"></div>
+  <div class="scanline" aria-hidden="true"></div>
 
-  <main class="blog-archive max-width-expanded">
+  <main class="blog-archive max-width-expanded" id="main-content">
 
-    <header class="archive-header glass-panel gs-reveal">
+    <header class="archive-header glass-panel gs-reveal" transition:name="hero-section" transition:animate="fade">
       <div class="system-status">
-        <span class="status-dot active"></span>
+        <span class="status-dot active" aria-hidden="true"></span>
         <span class="mono-tag">SISTEMA DE ARCHIVOS: ONLINE</span>
       </div>
 
@@ -29,17 +28,21 @@ const posts = (await getCollection('blog')).sort(
       </div>
     </header>
 
-    <section class="posts-grid">
+    <section class="posts-grid" transition:name="posts-section" transition:animate="slide">
       {posts.length === 0 ? (
         <div class="empty-state">
           <p class="error-msg">⚠️ Base de datos vacía. No hay bitácoras válidas en src/content/blog.</p>
         </div>
       ) : (
-        posts.map((post) => (
-          <article class="repository-node glass-panel type-blog gs-node">
+        posts.map((post, index) => (
+          <article class="repository-node glass-panel type-blog gs-node"
+                   data-title={post.data.title}
+                   data-desc={post.data.description}
+                   style={`--item-index: ${index}`}
+                   transition:name={`post-${post.id}`}>
             <a href={`/blog/${post.id}`} class="node-link">
               <div class="node-header">
-                <span class="node-icon">☕</span>
+                <span class="node-icon" aria-hidden="true">☕</span>
                 <span class="mono-tag domain-tag">{post.data.author} | {new Intl.DateTimeFormat('es-ES').format(post.data.date)}</span>
               </div>
               <h2 class="node-title text-gradient">{post.data.title}</h2>
@@ -52,7 +55,7 @@ const posts = (await getCollection('blog')).sort(
 
               <div class="node-footer">
                 <span class="execute-cmd">> init_reading_protocol()</span>
-                <span class="line-decorator"></span>
+                <span class="line-decorator" aria-hidden="true"></span>
               </div>
             </a>
           </article>
@@ -64,10 +67,17 @@ const posts = (await getCollection('blog')).sort(
 
 <script>
   import { gsap } from "gsap";
-  document.addEventListener("DOMContentLoaded", () => {
-    gsap.fromTo(".gs-reveal", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 });
-    // CORRECCIÓN GSAP:
-    gsap.fromTo(".gs-node", { scale: 0.95, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, delay: 0.4 });
+
+  document.addEventListener("astro:page-load", () => {
+    gsap.fromTo(".gs-reveal",
+      { y: 20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" }
+    );
+    
+    gsap.fromTo(".gs-node",
+      { scale: 0.95, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, delay: 0.4 }
+    );
   });
 </script>
 
@@ -77,26 +87,24 @@ const posts = (await getCollection('blog')).sort(
   .architect-title { font-size: 3.5rem; font-family: var(--font-display); margin: 1rem 0; }
   .manifesto { max-width: 600px; color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 2rem; }
 
-/* MATRIZ DE 3 COLUMNAS EXACTAS */
   .posts-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
   }
 
-  /* Responsividad: Bajar a 2 columnas en pantallas medianas (Tablets) */
   @media (max-width: 1100px) {
     .posts-grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
-  /* Responsividad: Bajar a 1 columna en pantallas pequeñas (Móviles) */
   @media (max-width: 768px) {
     .posts-grid {
       grid-template-columns: 1fr;
     }
   }
+  
   .repository-node { display: flex; flex-direction: column; border: 1px solid var(--panel-border); transition: transform 0.3s; min-height: 250px; }
   .repository-node:hover { transform: translateY(-5px); border-color: var(--accent-secondary); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15); }
   .node-link { padding: 2rem; display: flex; flex-direction: column; height: 100%; text-decoration: none; color: inherit; }

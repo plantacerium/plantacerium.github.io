@@ -2,99 +2,84 @@
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import { getAuthorClass } from '../../utils/author';
 
-// 1. OBTENCIÓN DE RUTAS ESTÁTICAS (La Matriz de Direcciones)
 export async function getStaticPaths() {
   const blogEntries = await getCollection('blog');
 
   return blogEntries.map((entry) => ({
-    // EL ARREGLO CRÍTICO: En la nueva API, usamos entry.id
     params: { slug: entry.id },
     props: { entry },
   }));
 }
 
-// Declaramos el tipado exacto que espera Astro
 interface Props {
   entry: CollectionEntry<'blog'>;
 }
 
-// 2. INICIALIZACIÓN DEL NODO
 const { entry } = Astro.props;
-
-// EL NUEVO MOTOR DE RENDERIZADO
 const { Content } = await render(entry);
 
-// Extraemos la metadata (asegurando valores por defecto si tu plugin no los generó)
 const { title, description, date, readTime = 5, paragraphs = 10, author, rating } = entry.data;
 
-// Formateo de fecha de la telemetría
 const formattedDate = new Intl.DateTimeFormat('es-ES', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
 }).format(date);
 
-// Asignar el "Aura" visual dependiendo de quién escribió el log
-const getAuthorAura = (authorType: string) => {
-  switch (authorType) {
-    case 'Humano': return 'text-caramel';
-    case 'LLM': return 'text-ai-purple';
-    case 'SSM': return 'text-ai-cyan';
-    case 'Híbrido': return 'text-gradient';
-    default: return 'text-starlight';
-  }
-};
-const auraClass = getAuthorAura(author);
+const auraClass = getAuthorClass(author);
 ---
 
 <Layout title={`${title} | Terminal Café`}>
 
-  <div class="reading-progress-bar" id="readingProgress"></div>
+  <div class="reading-progress-bar" id="readingProgress" role="progressbar" aria-label="Progreso de lectura" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
 
-  <main class="post-environment">
+  <main class="post-environment" id="main-content">
 
-    <nav class="post-navigation">
-      <a href="/blog" class="btn-return">
-        <span class="icon">←</span> Volver al Archivo
+    <nav class="post-navigation" aria-label="Navegación de publicaciones" transition:name="nav-section" transition:animate="fade">
+      <a href="/blog" class="btn-return" aria-label="Volver al archivo de blog">
+        <span class="icon" aria-hidden="true">←</span> Volver al Archivo
       </a>
     </nav>
 
-    <article class="post-container glass-panel">
+    <article class="post-container glass-panel" itemscope itemtype="https://schema.org/Article" transition:name={`card-${entry.id}`} transition:animate="fade">
+      <meta itemprop="datePublished" content={date.toISOString()} />
+      <meta itemprop="author" content={author} />
 
       <header class="post-header">
-        <div class="telemetry-bar">
-          <div class="telemetry-item">
-            <span class="pulse-dot"></span>
-            <time datetime={date.toISOString()}>{formattedDate}</time>
+        <div class="telemetry-bar" role="list" aria-label="Metadatos del artículo">
+          <div class="telemetry-item" role="listitem">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            <time datetime={date.toISOString()} itemprop="datePublished">{formattedDate}</time>
           </div>
-          <div class="telemetry-item">
+          <div class="telemetry-item" role="listitem">
             <span class="mono-tag">Latencia: {readTime} min</span>
           </div>
-          <div class="telemetry-item">
+          <div class="telemetry-item" role="listitem">
             <span class="mono-tag">Bloques: {paragraphs}</span>
           </div>
         </div>
 
-        <h1 class="post-title">{title}</h1>
-        <p class="post-description">{description}</p>
+        <h1 class="post-title" itemprop="headline" transition:name="page-title">{title}</h1>
+        <p class="post-description" itemprop="description">{description}</p>
 
         <div class="author-signature">
-          Orquestado por: <span class={`author-name ${auraClass}`}>{author}</span>
-          <span class="rating-badge">Alineación: ⭐ {rating}</span>
+          <span itemprop="author">Orquestado por: <span class={`author-name ${auraClass}`}>{author}</span></span>
+          <span class="rating-badge" aria-label={`Calificación: ${rating}`}>Alineación: ⭐ {rating}</span>
         </div>
       </header>
 
-      <div class="separator-line"></div>
+      <div class="separator-line" aria-hidden="true"></div>
 
-      <section class="mdx-content">
+      <section class="mdx-content" itemprop="articleBody" transition:name="content-section" transition:animate="slide">
         <Content />
       </section>
 
       <footer class="post-footer">
         <div class="end-of-transmission">
           <span class="mono-tag">> Fin de la transmisión.</span>
-          <a href="#" class="btn-return-top">↑ Ascender</a>
+          <a href="#" class="btn-return-top" aria-label="Volver arriba">↑ Ascender</a>
         </div>
       </footer>
 
@@ -103,7 +88,8 @@ const auraClass = getAuthorAura(author);
 </Layout>
 
 <script>
-  // Script de Arquitectura: Barra de progreso de lectura
+  import { gsap } from "gsap";
+
   window.addEventListener('scroll', () => {
     const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
     const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -111,14 +97,24 @@ const auraClass = getAuthorAura(author);
     const progressBar = document.getElementById('readingProgress');
     if (progressBar) {
       progressBar.style.width = scrolled + '%';
+      progressBar.setAttribute('aria-valuenow', String(Math.round(scrolled)));
     }
+  });
+
+  document.addEventListener("astro:page-load", () => {
+    gsap.fromTo(".post-container",
+      { y: 30, opacity: 0, filter: "blur(5px)" },
+      { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "power2.out" }
+    );
+
+    gsap.fromTo(".mdx-content",
+      { y: 20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.5, delay: 0.3, ease: "power2.out" }
+    );
   });
 </script>
 
 <style>
-  /* ==========================================================================
-     ENTORNO DEL POST Y ESTRUCTURA
-     ========================================================================== */
   .reading-progress-bar {
     position: fixed;
     top: 0;
@@ -160,9 +156,6 @@ const auraClass = getAuthorAura(author);
     padding: 3rem 4rem;
   }
 
-  /* ==========================================================================
-     CABECERA DEL POST (Telemetría)
-     ========================================================================== */
   .post-header { margin-bottom: 3rem; }
 
   .telemetry-bar {
@@ -215,9 +208,6 @@ const auraClass = getAuthorAura(author);
     margin-bottom: 3rem;
   }
 
-  /* ==========================================================================
-     ESTILOS DEL CONTENIDO RENDERIZADO (MDX -> HTML)
-     ========================================================================== */
   .mdx-content { font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary); }
 
   .mdx-content h2, .mdx-content h3, .mdx-content h4 { color: var(--text-primary); margin-top: 3rem; margin-bottom: 1rem; font-family: var(--font-display); }
@@ -257,9 +247,6 @@ const auraClass = getAuthorAura(author);
   }
   .mdx-content blockquote p:last-child { margin-bottom: 0; }
 
-  /* ==========================================================================
-     PIE DEL POST
-     ========================================================================== */
   .post-footer {
     margin-top: 4rem;
     padding-top: 2rem;
