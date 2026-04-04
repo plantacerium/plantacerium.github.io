@@ -1,17 +1,18 @@
 name: Despliegue Neuronal a GitHub Pages
 
 on:
-  # Activa el despliegue cada vez que empujas código a la rama 'main'
   push:
     branches: [ main ]
-  # Permite ejecutar el despliegue manualmente desde la interfaz de GitHub
   workflow_dispatch:
 
-# Permisos necesarios para que el bot de GitHub publique la web
 permissions:
   contents: read
   pages: write
   id-token: write
+
+# Forzamos Node 24 para evitar la obsolescencia programada de junio 2026
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -19,10 +20,26 @@ jobs:
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
-      
+
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9 # O la versión que estés usando localmente
+
+      - name: Configurar Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm' # Astro y GitHub ahora optimizan el caché para pnpm
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
       - name: Instalar, compilar y empaquetar Astro
         uses: withastro/action@v3
-        # Esto instalará tus dependencias (npm install) y ejecutará (npm run build)
+        with:
+          # ESPECIFICACIÓN CRÍTICA: Cambiamos a pnpm
+          package-manager: pnpm
 
   deploy:
     needs: build
