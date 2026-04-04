@@ -1,0 +1,36 @@
+name: Despliegue Neuronal a GitHub Pages
+
+on:
+  # Activa el despliegue cada vez que empujas código a la rama 'main'
+  push:
+    branches: [ main ]
+  # Permite ejecutar el despliegue manualmente desde la interfaz de GitHub
+  workflow_dispatch:
+
+# Permisos necesarios para que el bot de GitHub publique la web
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+      
+      - name: Instalar, compilar y empaquetar Astro
+        uses: withastro/action@v3
+        # Esto instalará tus dependencias (npm install) y ejecutará (npm run build)
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Desplegar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
