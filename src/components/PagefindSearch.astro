@@ -1,57 +1,243 @@
 ---
 /**
- * Pagefind Search Component
- * Provides SEO-friendly search powered by Pagefind
+ * Pagefind Search Component - Immersive Edition
+ * Features fuzzy search with reusable utilities
  */
+import { portfolioNodes } from '../data/portfolio';
+import { getCollection } from 'astro:content';
+import type { SearchItem } from '../lib/search';
+import '../styles/search-cards.css';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+const posts = await getCollection('blog');
+const blogData = posts.map((post): SearchItem => ({
+  title: post.data.title,
+  description: post.data.description,
+  url: `/blog/${post.id}`,
+  domain: post.data.author,
+  category: 'blog'
+}));
+
+const allContent: SearchItem[] = [
+  ...portfolioNodes.map(item => ({ 
+    ...item, 
+    type: 'REPO'
+  })),
+  ...blogData.map(item => ({ 
+    ...item, 
+    type: 'LOG'
+  }))
+];
+
+const searchData = JSON.stringify(allContent);
 ---
 
-<div class="search-container" id="pagefind-search">
-  <div class="search-wrapper">
-    <div class="search-input-wrapper">
-      <span class="search-icon" aria-hidden="true">⚲</span>
-      <input
-        type="search"
-        id="pagefind-search-input"
-        placeholder="> Buscar en el archivo..."
-        aria-label="Buscar en el archivo"
-        autocomplete="off"
-      />
+<div class={`search-immersive-container ${className || ''}`}>
+  <div class="search-3d-wrapper">
+    <div class="search-input-container">
+      <div class="search-glow-ring"></div>
+      <div class="search-inner">
+        <span class="search-icon-wrapper">
+          <svg class="search-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+        <input
+          type="search"
+          id="pagefind-search-input"
+          class="search-input"
+          placeholder="> Neural search across all content..."
+          aria-label="Search across all content"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <div class="search-status" id="search-status">
+          <span class="status-dot"></span>
+        </div>
+      </div>
     </div>
-    <div id="search-results" class="search-results" role="region" aria-label="Resultados de búsqueda"></div>
+    <div id="search-results" class="search-results-panel" role="region" aria-label="Search results"></div>
   </div>
 </div>
 
-<script is:inline>
-  // Pagefind search functionality
-  async function initPagefindSearch() {
+<script is:inline define:vars={{ searchData }}>
+(function() {
+  const allContent = JSON.parse(searchData);
+
+  function fuzzyMatch(text, query) {
+    if (!text || !query) return 0;
+    const t = text.toLowerCase();
+    const q = query.toLowerCase();
+    
+    if (t.includes(q)) return 1;
+    
+    let score = 0;
+    let qIndex = 0;
+    let consecutiveBonus = 0;
+    
+    for (let i = 0; i < t.length && qIndex < q.length; i++) {
+      if (t[i] === q[qIndex]) {
+        score += 1 + consecutiveBonus;
+        consecutiveBonus += 0.5;
+        qIndex++;
+      } else {
+        consecutiveBonus = 0;
+      }
+    }
+    
+    if (qIndex === q.length) {
+      return score / q.length;
+    }
+    
+    return 0;
+  }
+
+  function fuzzySearch(query) {
+    const q = query.toLowerCase().trim();
+    if (q.length < 2) return [];
+    
+    const results = allContent.map(item => {
+      const titleScore = fuzzyMatch(item.title, q) * 3;
+      const domainScore = fuzzyMatch(item.domain || '', q) * 2;
+      const categoryScore = fuzzyMatch(item.category || '', q) * 1.5;
+      const descScore = fuzzyMatch(item.description || item.impact || '', q) * 1;
+      
+      const totalScore = titleScore + domainScore + categoryScore + descScore;
+      
+      return { ...item, score: totalScore };
+    });
+    
+    return results
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 12);
+  }
+
+  function getMatchIndices(text, query) {
+    if (!text || !query) return [];
+    const indices = [];
+    const t = text.toLowerCase();
+    const q = query.toLowerCase();
+    
+    let idx = t.indexOf(q);
+    while (idx !== -1) {
+      indices.push({ start: idx, end: idx + q.length });
+      idx = t.indexOf(q, idx + 1);
+    }
+    
+    return indices;
+  }
+
+  function highlightMatch(text, query) {
+    if (!text || !query) return text;
+    
+    const indices = getMatchIndices(text, query);
+    if (indices.length === 0) return text;
+    
+    let result = '';
+    let lastEnd = 0;
+    
+    indices.forEach(({ start, end }) => {
+      result += escapeHtml(text.slice(lastEnd, start));
+      result += `<mark>${escapeHtml(text.slice(start, end))}</mark>`;
+      lastEnd = end;
+    });
+    
+    result += escapeHtml(text.slice(lastEnd));
+    return result;
+  }
+
+  function escapeHtml(text) {
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+    return text.replace(/[&<>"']/g, m => map[m]);
+  }
+
+  function renderResults(results, query) {
+    if (results.length === 0) {
+      return `
+        <div class="search-empty">
+          <span class="empty-icon">🔍</span>
+          <p>No results found for "<span class="query-text">${query}</span>"</p>
+        </div>
+      `;
+    }
+
+    let html = `<div class="results-header">
+      <span class="results-count">${results.length} result${results.length !== 1 ? 's' : ''}</span>
+      <span class="results-source">Neural Matrix</span>
+    </div>
+    <div class="results-grid">`;
+
+    results.forEach((result, index) => {
+      const excerpt = result.description || result.impact || '';
+      const isBlog = result.type === 'LOG';
+      const icon = isBlog ? '☕' : '📁';
+      const auraClass = isBlog ? 'aura-blog' : 'aura-repo';
+      
+      html += `
+        <a href="${result.url}" class="search-result-card ${auraClass}" style="--item-delay: ${index * 50}ms">
+          <div class="search-card-link">
+            <header class="search-card-header">
+              <div class="search-card-badge">
+                <span class="search-card-indicator"></span>
+                <span>${icon} ${result.domain || (isBlog ? 'Blog' : result.category)}</span>
+              </div>
+              <span class="search-card-type">${result.type}</span>
+            </header>
+            <div class="search-card-body">
+              <h4 class="search-card-title">${highlightMatch(result.title, query)}</h4>
+              ${excerpt ? `<p class="search-card-desc">${highlightMatch(excerpt, query)}</p>` : ''}
+            </div>
+            <footer class="search-card-footer">
+              <div class="search-card-action">
+                <span class="search-card-action-icon">⚡</span>
+                <span>Explore</span>
+              </div>
+              <span class="search-card-arrow">→</span>
+            </footer>
+          </div>
+        </a>
+      `;
+    });
+
+    html += '</div>';
+
+    return html;
+  }
+
+  function initSearch() {
     const searchInput = document.getElementById('pagefind-search-input');
     const resultsContainer = document.getElementById('search-results');
+    const searchStatus = document.getElementById('search-status');
     
     if (!searchInput || !resultsContainer) return;
     
-    let pagefind = null;
-    
-    // Try to load pagefind (only available in production build)
-    try {
-      pagefind = await import('/pagefind/pagefind.js');
-      await pagefind.init();
-    } catch (e) {
-      // Pagefind not available in dev mode
-      console.log('Pagefind not available - search requires production build');
-      resultsContainer.innerHTML = '<p class="search-info">🔍 La búsqueda está disponible en la versión de producción (pnpm build)</p>';
-      return;
+    if (searchStatus) {
+      searchStatus.innerHTML = '<span class="status-dot fuzzy" title="Fuzzy Search Active"></span>';
     }
     
     let debounceTimer = null;
     
-    searchInput.addEventListener('input', async (e) => {
+    const container = document.querySelector('.search-3d-wrapper');
+    searchInput.addEventListener('focus', () => {
+      container?.classList.add('focused');
+    });
+    searchInput.addEventListener('blur', () => {
+      setTimeout(() => container?.classList.remove('focused'), 200);
+    });
+    
+    searchInput.addEventListener('input', (e) => {
       const query = e.target.value.trim();
       
-      // Clear previous timer
       if (debounceTimer) clearTimeout(debounceTimer);
       
-      // Debounce search
-      debounceTimer = setTimeout(async () => {
+      debounceTimer = setTimeout(() => {
         if (query.length < 2) {
           resultsContainer.innerHTML = '';
           resultsContainer.classList.remove('active');
@@ -59,75 +245,20 @@
         }
         
         resultsContainer.classList.add('active');
-        resultsContainer.innerHTML = '<div class="search-loading">⟳ Buscando...</div>';
+        resultsContainer.innerHTML = '<div class="search-loading"><span class="loader-ring"></span>Searching...</div>';
         
-        try {
-          const search = await pagefind.search(query);
-          
-          if (search.results.length === 0) {
-            resultsContainer.innerHTML = `
-              <div class="search-empty">
-                <span class="search-empty-icon">🔍</span>
-                <p>No se encontraron resultados para "<strong>${query}</strong>"</p>
-              </div>
-            `;
-            return;
-          }
-          
-          const results = await Promise.all(
-            search.results.slice(0, 8).map(r => r.data())
-          );
-          
-          let html = `<div class="search-results-header">
-            <span class="result-count">${search.results.length} resultado${search.results.length !== 1 ? 's' : ''}</span>
-          </div>`;
-          
-          results.forEach(result => {
-            const url = new URL(result.url);
-            const isBlog = url.pathname.includes('/blog/');
-            const icon = isBlog ? '☕' : '📁';
-            const type = isBlog ? 'LOG' : 'REPO';
-            
-            html += `
-              <a href="${result.url}" class="search-result-item">
-                <div class="result-icon">${icon}</div>
-                <div class="result-content">
-                  <div class="result-meta">${type}</div>
-                  <h4 class="result-title">${result.meta?.title || 'Sin título'}</h4>
-                  <p class="result-excerpt">${result.excerpt || ''}</p>
-                </div>
-              </a>
-            `;
-          });
-          
-          if (search.results.length > 8) {
-            html += `<div class="search-more">+${search.results.length - 8} más resultados</div>`;
-          }
-          
-          resultsContainer.innerHTML = html;
-          
-          // Close on result click
-          resultsContainer.querySelectorAll('.search-result-item').forEach(item => {
-            item.addEventListener('click', () => {
-              resultsContainer.classList.remove('active');
-              searchInput.value = '';
-            });
-          });
-          
-        } catch (error) {
-          resultsContainer.innerHTML = '<p class="search-error">Error en la búsqueda</p>';
-        }
-      }, 300);
+        const results = fuzzySearch.call(null, query);
+        resultsContainer.innerHTML = renderResults(results, query);
+        
+      }, 100);
     });
     
-    // Close on click outside
     document.addEventListener('click', (e) => {
-      if (!e.target.closest('#pagefind-search') && !e.target.closest('.search-trigger')) {
+      if (!e.target.closest('.search-immersive-container')) {
         resultsContainer.classList.remove('active');
       }
     });
     
-    // Close on Escape
     searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         resultsContainer.classList.remove('active');
@@ -136,196 +267,383 @@
     });
   }
   
-  // Initialize on page load
-  initPagefindSearch();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSearch);
+  } else {
+    initSearch();
+  }
   
-  // Re-initialize after view transitions
-  document.addEventListener('astro:page-load', initPagefindSearch);
+  document.addEventListener('astro:page-load', initSearch);
+})();
 </script>
 
 <style>
-  .search-container {
+  .search-immersive-container {
     width: 100%;
-    max-width: 600px;
+    max-width: 700px;
     margin: 0 auto;
+    perspective: 1000px;
   }
 
-  .search-wrapper {
+  .search-3d-wrapper {
     position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
-  .search-input-wrapper {
+  .search-3d-wrapper.focused {
+    transform: translateZ(20px) scale(1.02);
+  }
+
+  .search-input-container {
     position: relative;
+    transform-style: preserve-3d;
   }
 
-  .search-icon {
+  .search-glow-ring {
     position: absolute;
-    left: 1.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.5rem;
-    color: var(--accent-main);
-    pointer-events: none;
-  }
-
-  #pagefind-search-input {
-    width: 100%;
-    padding: 1.5rem 1.5rem 1.5rem 4rem;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--border-radius-md);
-    color: var(--text-primary);
-    font-family: var(--font-mono);
-    font-size: 1.1rem;
-    outline: none;
-    transition: all var(--transition-fast);
-  }
-
-  #pagefind-search-input:focus {
-    border-color: var(--accent-main);
-    box-shadow: 0 0 20px var(--accent-glow);
-  }
-
-  #pagefind-search-input::placeholder {
-    color: var(--text-muted);
-  }
-
-  /* Clear button for search */
-  #pagefind-search-input::-webkit-search-cancel-button {
-    -webkit-appearance: none;
-    appearance: none;
-  }
-
-  .search-results {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    left: 0;
-    right: 0;
-    background: var(--panel-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--border-radius-md);
-    max-height: 0;
-    overflow: hidden;
+    inset: -4px;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 242, 255, 0.3),
+      rgba(139, 92, 246, 0.3),
+      rgba(212, 175, 55, 0.2)
+    );
+    border-radius: calc(var(--border-radius-lg) + 4px);
+    filter: blur(20px);
     opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.4s ease;
+    z-index: -1;
+    animation: glow-rotate 8s linear infinite;
   }
 
-  .search-results.active {
-    max-height: 500px;
-    overflow-y: auto;
+  .search-3d-wrapper.focused .search-glow-ring {
     opacity: 1;
   }
 
-  .search-results-header {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--panel-border);
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--text-muted);
+  @keyframes glow-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 
-  .search-loading,
-  .search-empty,
-  .search-error,
-  .search-info {
-    padding: 2rem;
-    text-align: center;
-    color: var(--text-secondary);
-    font-family: var(--font-mono);
-  }
-
-  .search-empty-icon {
-    font-size: 2rem;
-    display: block;
-    margin-bottom: 0.5rem;
-  }
-
-  .search-result-item {
+  .search-inner {
+    position: relative;
     display: flex;
-    gap: 1rem;
-    padding: 1rem;
-    border-bottom: 1px solid var(--panel-border);
-    text-decoration: none;
-    color: inherit;
-    transition: background var(--transition-fast);
+    align-items: center;
+    background: linear-gradient(
+      135deg,
+      rgba(15, 15, 20, 0.9) 0%,
+      rgba(20, 20, 30, 0.85) 100%
+    );
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--border-radius-lg);
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 
+      0 10px 40px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
-  .search-result-item:hover {
-    background: rgba(255, 255, 255, 0.05);
+  .search-3d-wrapper.focused .search-inner {
+    border-color: rgba(0, 242, 255, 0.4);
+    box-shadow: 
+      0 15px 50px rgba(0, 0, 0, 0.5),
+      0 0 30px rgba(0, 242, 255, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
-  .search-result-item:last-child {
-    border-bottom: none;
-  }
-
-  .result-icon {
-    font-size: 1.5rem;
+  .search-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
     flex-shrink: 0;
   }
 
-  .result-content {
-    flex: 1;
-    min-width: 0;
+  .search-icon {
+    color: var(--accent-main);
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.5));
   }
 
-  .result-meta {
+  .search-3d-wrapper.focused .search-icon {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 12px rgba(0, 242, 255, 0.8));
+  }
+
+  .search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 1.1rem;
+    padding: 0.75rem;
+    letter-spacing: 0.5px;
+  }
+
+  .search-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
+  .search-status {
+    padding: 0 0.75rem;
+  }
+
+  .status-dot {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    transition: all 0.3s ease;
+  }
+
+  .status-dot.fuzzy {
+    background: var(--accent-secondary);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+  }
+
+  .search-results-panel {
+    position: absolute;
+    top: calc(100% + 1rem);
+    left: 0;
+    right: 0;
+    background: linear-gradient(
+      145deg,
+      rgba(15, 15, 20, 0.98) 0%,
+      rgba(25, 25, 35, 0.95) 100%
+    );
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-lg);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transform-origin: top center;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 1000;
+    box-shadow: 
+      0 25px 60px rgba(0, 0, 0, 0.7),
+      0 0 40px rgba(0, 242, 255, 0.08);
+    isolation: isolate;
+  }
+
+  .search-results-panel.active {
+    max-height: 550px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .search-results-panel::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .search-results-panel::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+
+  .search-results-panel::-webkit-scrollbar-thumb {
+    background: rgba(0, 242, 255, 0.4);
+    border-radius: 3px;
+  }
+
+  .search-results-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 242, 255, 0.6);
+  }
+
+  .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .results-count {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
     color: var(--accent-main);
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 0.25rem;
   }
 
-  .result-title {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    color: var(--text-primary);
-    margin: 0 0 0.25rem;
-    line-height: 1.3;
-  }
-
-  .result-excerpt {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    margin: 0;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* Highlight matched text */
-  .result-excerpt mark {
-    background: rgba(0, 242, 255, 0.3);
-    color: var(--accent-main);
-    padding: 0 0.2em;
-    border-radius: 2px;
-  }
-
-  .search-more {
-    padding: 0.75rem;
-    text-align: center;
+  .results-source {
     font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    border-top: 1px solid var(--panel-border);
+    font-size: 0.65rem;
+    color: var(--accent-secondary);
+    background: rgba(139, 92, 246, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+    align-items: start;
+  }
+
+  .search-result-card {
+    animation: card-enter 0.4s ease forwards;
+    animation-delay: var(--item-delay, 0ms);
+    opacity: 0;
+    min-height: 180px;
+    height: auto;
+  }
+
+  @keyframes card-enter {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .search-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 3rem;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+  }
+
+  .loader-ring {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(0, 242, 255, 0.2);
+    border-top-color: var(--accent-main);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .search-empty {
+    text-align: center;
+    padding: 3rem;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .search-empty p {
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    margin: 0;
+  }
+
+  .query-text {
+    color: var(--accent-main);
+  }
+
+  @media (max-width: 1200px) {
+    .results-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .results-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   @media (max-width: 768px) {
-    .search-results {
+    .search-immersive-container {
+      perspective: none;
+    }
+
+    .search-3d-wrapper {
+      transform: none !important;
+    }
+
+    .search-results-panel {
       position: fixed;
       top: auto;
       bottom: 0;
       left: 0;
       right: 0;
-      max-height: 60vh;
-      border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+      border-radius: 20px 20px 0 0;
+      max-height: 70vh;
+      transform: translateY(100%);
+      z-index: 9999;
+    }
+
+    .search-results-panel.active {
+      transform: translateY(0);
+    }
+
+    .results-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      padding: 1rem;
+    }
+
+    .search-result-card {
+      min-height: 160px;
+    }
+  }
+
+  @media (max-width: 540px) {
+    .results-grid {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .search-result-card {
+      min-height: 140px;
+    }
+
+    .search-card-link {
+      padding: 1rem;
+    }
+
+    .search-card-title {
+      font-size: 1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .search-glow-ring,
+    .status-dot.fuzzy,
+    .loader-ring {
+      animation: none;
+    }
+    
+    .search-result-card {
+      animation: none;
+      opacity: 1;
     }
   }
 </style>

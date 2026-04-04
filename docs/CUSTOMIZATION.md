@@ -271,29 +271,85 @@ Users with `prefers-reduced-motion` automatically get reduced animations.
 
 ## Search
 
-The template includes Pagefind for SEO-friendly search.
+The template includes an immersive neural search with **fuzzy matching** that filters actual data from `portfolio.ts` and blog collection.
 
 ### How It Works
 
-Search is powered by Pagefind which creates a search index during build.
+Search uses a custom fuzzy matching algorithm that:
+- Searches across title (3x weight), domain (2x), category (1.5x), and description (1x)
+- Ranks results by relevance score
+- Returns up to 12 best matches
+- Highlights matched text in results
+
+### Features
+
+- **4-Column Grid Results**: Search results display as premium cards in a 4-column grid
+- **Fuzzy Matching**: Intelligent matching that finds partial and similar terms
+- **Weighted Scoring**: Title matches rank higher than description matches
+- **Real-time Results**: Debounced input (100ms) for smooth experience
+- **Status Indicator**: Shows 🟣 Fuzzy Search Active
+- **Immersive 3D Effects**: Cards with hover transforms, glow effects, and staggered animations
+- **Responsive**: 4 cols → 3 cols (1200px) → 2 cols (768px) → 1 col (480px)
+
+### Components
+
+| Component | File | Description |
+|----------|------|-------------|
+| `PagefindSearch` | `src/components/PagefindSearch.astro` | Main search container with input and results |
+| `SearchResultCard` | `src/components/SearchResultCard.astro` | Individual result card (reference) |
 
 ### Customizing Search
 
-Edit `src/components/PagefindSearch.astro` to customize:
-- Result appearance
-- Number of results shown
-- Highlight colors
+The search automatically includes all data from portfolio and blog. To add more portfolio items:
+
+```typescript
+// src/data/portfolio.ts
+export const portfolioNodes: PortfolioNode[] = [
+  {
+    title: "Your Project",
+    url: "https://github.com/...",
+    domain: "Category",
+    impact: "Brief description",
+    category: "ui" // ui | system | zen
+  }
+];
+```
+
+### Fuzzy Search Algorithm
+
+The search uses a custom algorithm:
+
+1. **Exact Match**: If query appears in text, score = 1
+2. **Partial Match**: For each character match in sequence, score += 1 + consecutive bonus
+3. **Weighted Fields**: title (3x), domain (2x), category (1.5x), description (1x)
+4. **Sorted Results**: Highest score first, max 12 results
+
+### Atomic Structure
+
+Search functionality is separated into reusable modules:
+
+| File | Purpose |
+|------|---------|
+| `src/lib/search.ts` | Core fuzzy search logic and types |
+| `src/styles/search-cards.css` | Shared search card styles |
+| `src/components/PagefindSearch.astro` | Search UI component |
+
+### Result Card Structure
+
+Each search result displays as a card with:
+- Icon (📁 for repos, ☕ for blog)
+- Type badge (REPO/LOG)
+- Title with highlighted matches (cyan)
+- Domain/description with highlighted matches (purple)
+- "Explore" action with arrow
 
 ### Testing Search
 
-Search is only available in production builds:
-
 ```bash
-pnpm build
-pnpm preview
+npm run dev
 ```
 
-Then navigate to http://localhost:4321 and search.
+Then navigate to http://localhost:4321 and start typing to see fuzzy results filter in real-time.
 
 ---
 
@@ -355,7 +411,252 @@ import myImage from '../assets/my-photo.jpg';
 
 ---
 
-## Adding New Pages
+## Biofluid Glassmorphism Effects
+
+The template includes premium biofluid glassmorphism effects for a living, organic feel:
+
+### Available Classes
+
+| Class | Effect |
+|-------|--------|
+| `.biofluid-glass` | Living glass with animated color rotation |
+| `.liquid-glass` | Shimmering liquid surface effect |
+| `.card-2-5d` | 2.5D depth card with glow on hover |
+| `.immersive-card` | Premium card combining biofluid shimmer + 3D tilt + glow |
+| `.panel-3d` | Floating 3D panel with animation |
+| `.blob-container` | Morphing blob background |
+| `.iridescent-border` | Rainbow-shifting border |
+
+### Usage
+
+```html
+<div class="biofluid-glass">
+  <div class="biofluid-content">
+    Living glass content
+  </div>
+</div>
+
+<div class="liquid-glass">
+  Liquid surface content
+</div>
+
+<div class="card-2-5d glass-panel">
+  2.5D interactive card
+</div>
+
+<div class="immersive-card">
+  Premium immersive card with biofluid + 3D effect
+</div>
+
+<div class="panel-3d glass-panel">
+  Floating 3D panel
+</div>
+```
+
+### Immersive Card (Recommended)
+
+The `.immersive-card` class is the premium option combining all effects:
+
+```html
+<div class="immersive-card">
+  <a href="/your-link">
+    <h3>Card Title</h3>
+    <p>Card description goes here...</p>
+  </a>
+</div>
+```
+
+**Features:**
+- Animated conic gradient shimmer
+- 3D tilt on hover (rotateX, rotateY)
+- Glow shadow effect
+- Scale animation on hover
+- Cyan/Purple/Gold color palette
+
+### 2.5D Card Effect
+
+```html
+<div class="card-2-5d glass-panel">
+  <h3>Interactive Card</h3>
+  <p>Hover for glow effect</p>
+</div>
+```
+
+### Depth Layers
+
+```html
+<div class="group-depth">
+  <div class="depth-layer depth-layer-1">Foreground</div>
+  <div class="depth-layer depth-layer-2">Middle</div>
+  <div class="depth-layer depth-layer-3">Background</div>
+</div>
+```
+
+---
+
+## Three.js Immersive Experience
+
+The template includes a premium 3D immersive experience with Three.js.
+
+### Disabling Three.js Features
+
+In `Layout.astro`, modify the ImmersiveCanvas props:
+
+```astro
+<ImmersiveCanvas 
+  enableParticles={true}
+  enableGeometry={true}
+  enableNebula={true}
+  enableGrid={true}
+  enableRings={true}
+/>
+```
+
+### Adjusting Performance
+
+Edit `src/utils/webgl.ts` to customize particle counts:
+
+```typescript
+export function getParticleCount(level: WebGLCapabilities): number {
+  switch (level) {
+    case 'high': return 5000;    // Desktop
+    case 'medium': return 2000;  // Mid-range
+    case 'low': return 500;       // Mobile
+    default: return 500;
+  }
+}
+```
+
+### Custom Cursor Trail
+
+```astro
+<CursorTrail 
+  enableTrail={true}
+  trailColor="#00f2ff"
+  maxParticles={20}
+/>
+```
+
+### TiltCard for 3D Effects
+
+Wrap any content in a TiltCard for 3D hover effects:
+
+```astro
+<TiltCard tiltStrength={15} glareOpacity={0.3}>
+  <div class="glass-panel">
+    Content with 3D tilt effect
+  </div>
+</TiltCard>
+```
+
+### Parallax Sections
+
+Add depth to sections:
+
+```astro
+<ParallaxSection speed={0.5} direction="vertical">
+  <section>
+    Parallax-enabled content
+  </section>
+</ParallaxSection>
+```
+
+---
+
+## Premium Glassmorphism
+
+The template includes enhanced glassmorphism variants:
+
+### Available Classes
+
+| Class | Description |
+|-------|-------------|
+| `.glass-panel` | Standard glass effect |
+| `.glass-panel-heavy` | Stronger blur and border |
+| `.glass-panel-prismatic` | Shimmer rainbow effect |
+| `.glass-panel-gold` | Gold-tinted glass |
+| `.glass-panel-holographic` | Animated holographic overlay |
+
+### Glow Effects
+
+| Class | Effect |
+|-------|--------|
+| `.glow-cyan` | Cyan glow |
+| `.glow-purple` | Purple glow |
+| `.glow-gold` | Gold glow |
+| `.glow-rose-gold` | Rose gold glow |
+
+### Premium Text Gradients
+
+```html
+<p class="text-premium-gradient">Premium gradient text</p>
+<p class="text-cosmic-gradient">Cosmic gradient text</p>
+```
+
+---
+
+## Homepage Layout
+
+The homepage features a premium immersive layout with three sections:
+
+### Structure
+
+```html
+<main class="max-width-expanded">
+  <!-- Hero Section with floating orbs -->
+  <section class="hero-section">...</section>
+  
+  <!-- Search Section -->
+  <section class="omni-search-container">...</section>
+  
+  <!-- Portfolio Grid (3 columns) -->
+  <section class="portfolio-matrix">
+    <div class="node-grid">
+      <!-- Portfolio items -->
+    </div>
+  </section>
+  
+  <!-- Blog Section (3 columns) -->
+  <section class="blog-matrix">
+    <div class="blog-grid">
+      <!-- Latest 6 blog posts -->
+    </div>
+  </section>
+</main>
+```
+
+### Grid Configuration
+
+| Section | Desktop | Tablet (1200px) | Mobile (768px) |
+|---------|---------|-----------------|----------------|
+| Portfolio | 3 columns | 2 columns | 1 column |
+| Blog | 3 columns | 2 columns | 1 column |
+| Gap | 2rem | 2rem | 1.5rem |
+
+### Customizing Cards
+
+Apply the `.immersive-card` class to any card:
+
+```html
+<article class="repository-node">
+  <div class="card-content immersive-card">
+    <!-- Card content -->
+  </div>
+</article>
+```
+
+### Blog Section
+
+The homepage displays the 6 most recent blog posts. To change this:
+
+```astro
+<!-- In src/pages/index.astro -->
+{posts.slice(0, 6).map((post) => (...))}
+```
+
+Change `6` to display more or fewer posts.
+
+---
 
 ### Static Page
 

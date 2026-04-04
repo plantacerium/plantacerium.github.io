@@ -5,12 +5,14 @@
   /* --- Geometría y Física --- */
   --sidebar-width: 380px;
   --glass-blur: blur(16px);
+  --glass-blur-heavy: blur(24px);
   --border-radius-lg: 16px;
   --border-radius-md: 12px;
   --border-radius-sm: 6px;
   --radius-pill: 9999px;
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  --transition-bounce: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* --- Tema Base (Espacio Profundo / Default) --- */
   --bg-base: #050507;
@@ -25,6 +27,14 @@
   --accent-glow: rgba(0, 242, 255, 0.3);
   --accent-secondary: #8b5cf6; /* Violeta Profundo (LLM/Conocimiento) */
   --accent-warm: #d4a373; /* Caramelo (Calidez Humana/Café) */
+
+  /* --- Premium Gold Accents --- */
+  --gold-primary: #d4af37;
+  --gold-light: #f4d58d;
+  --gold-dark: #aa8c2c;
+  --gold-glow: rgba(212, 175, 55, 0.4);
+  --rose-gold: #b76e79;
+  --platinum: #e5e4e2;
 
   /* --- Tipografía --- */
   --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
@@ -47,6 +57,8 @@
   --text-ai-purple: var(--ai-purple);
   --text-ai-cyan: var(--ai-cyan);
   --text-neon-cyan: var(--ai-cyan);
+  --text-gold: var(--gold-primary);
+  --text-rose-gold: var(--rose-gold);
 }
 
 /* --- Variación de Tema: QUANTUM (Alta Energía / Procesamiento) --- */
@@ -150,6 +162,560 @@ input:focus {
   border: 1px solid var(--panel-border);
   border-radius: var(--border-radius-md);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Premium Glass Variants */
+.glass-panel-heavy {
+  background: rgba(15, 15, 20, 0.8);
+  backdrop-filter: var(--glass-blur-heavy);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-panel-prismatic {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(0, 242, 255, 0.05),
+    0 0 60px rgba(139, 92, 246, 0.05);
+}
+
+.glass-panel-gold {
+  background: linear-gradient(
+    135deg,
+    rgba(212, 175, 55, 0.08) 0%,
+    rgba(212, 175, 55, 0.02) 50%,
+    rgba(212, 175, 55, 0.05) 100%
+  );
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(212, 175, 55, 0.1);
+}
+
+.glass-panel-holographic {
+  position: relative;
+  background: var(--panel-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+.glass-panel-holographic::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    125deg,
+    transparent 40%,
+    rgba(0, 242, 255, 0.03) 45%,
+    rgba(139, 92, 246, 0.03) 50%,
+    rgba(212, 175, 55, 0.02) 55%,
+    transparent 60%
+  );
+  animation: holographic-shift 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes holographic-shift {
+  0%, 100% { transform: translateX(-100%) rotate(0deg); }
+  50% { transform: translateX(100%) rotate(0deg); }
+}
+
+/* ==========================================================================
+   4B. BIOFLUID GLASSMORPHISM (Organic Living Effects)
+   ========================================================================== */
+
+/* Biofluid container - creates living, organic glass effect */
+.biofluid-glass {
+  position: relative;
+  background: var(--panel-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+/* Animated biofluid layers */
+.biofluid-glass::before,
+.biofluid-glass::after {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.biofluid-glass::before {
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    transparent 0deg,
+    rgba(0, 242, 255, 0.03) 60deg,
+    rgba(139, 92, 246, 0.03) 120deg,
+    rgba(212, 175, 55, 0.02) 180deg,
+    transparent 240deg,
+    rgba(0, 242, 255, 0.02) 300deg,
+    transparent 360deg
+  );
+  animation: biofluid-rotate 30s linear infinite;
+}
+
+.biofluid-glass::after {
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 50%,
+    rgba(0, 242, 255, 0.05) 0%,
+    transparent 50%
+  );
+  animation: biofluid-pulse 8s ease-in-out infinite;
+}
+
+@keyframes biofluid-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes biofluid-pulse {
+  0%, 100% { 
+    opacity: 0.5;
+    transform: scale(1) rotate(0deg);
+  }
+  33% {
+    opacity: 0.8;
+    transform: scale(1.1) rotate(120deg);
+  }
+  66% {
+    opacity: 0.6;
+    transform: scale(0.95) rotate(240deg);
+  }
+}
+
+/* Inner content wrapper */
+.biofluid-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* 2.5D Card Effect */
+.card-2-5d {
+  position: relative;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+}
+
+.card-2-5d::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
+  border-radius: inherit;
+  pointer-events: none;
+  transform: translateZ(1px);
+  transition: opacity 0.4s ease;
+}
+
+.card-2-5d::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 242, 255, 0.3),
+    rgba(139, 92, 246, 0.25),
+    rgba(212, 175, 55, 0.15)
+  );
+  border-radius: calc(var(--border-radius-lg) + 3px);
+  filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.5s ease, filter 0.5s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.card-2-5d:hover::after {
+  opacity: 1;
+  filter: blur(16px);
+}
+
+.card-2-5d:hover {
+  transform: translateY(-8px) rotateX(3deg) rotateY(-2deg);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(0, 242, 255, 0.1);
+}
+
+.card-2-5d:hover::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    transparent 40%,
+    rgba(0, 242, 255, 0.05) 100%
+  );
+}
+
+/* Immersive Card - Enhanced version combining biofluid + 2.5D + glow */
+.immersive-card {
+  position: relative;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.immersive-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    transparent 0deg,
+    rgba(0, 242, 255, 0.06) 60deg,
+    rgba(139, 92, 246, 0.05) 120deg,
+    rgba(212, 175, 55, 0.04) 180deg,
+    transparent 240deg,
+    rgba(0, 242, 255, 0.04) 300deg,
+    transparent 360deg
+  );
+  animation: immersive-rotate 20s linear infinite;
+  pointer-events: none;
+  opacity: 0.6;
+  transition: opacity 0.4s ease;
+}
+
+.immersive-card::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 242, 255, 0.35),
+    rgba(139, 92, 246, 0.3),
+    rgba(212, 175, 55, 0.2)
+  );
+  border-radius: calc(var(--border-radius-lg) + 4px);
+  filter: blur(20px);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.immersive-card:hover {
+  transform: translateY(-10px) scale(1.02) rotateX(4deg) rotateY(-3deg);
+  border-color: rgba(0, 242, 255, 0.2);
+  box-shadow: 
+    0 30px 60px rgba(0, 0, 0, 0.5),
+    0 0 50px rgba(0, 242, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.immersive-card:hover::after {
+  opacity: 1;
+  filter: blur(25px);
+}
+
+.immersive-card:hover::before {
+  opacity: 1;
+  animation-duration: 10s;
+}
+
+@keyframes immersive-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 3D Floating Panel */
+.panel-3d {
+  position: relative;
+  transform-style: preserve-3d;
+  animation: float-3d 6s ease-in-out infinite;
+}
+
+.panel-3d::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateZ(-20px) scale(0.95);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: inherit;
+  filter: blur(20px);
+  z-index: -1;
+}
+
+@keyframes float-3d {
+  0%, 100% { 
+    transform: translateY(0) rotateX(0deg) rotateY(0deg);
+  }
+  25% {
+    transform: translateY(-8px) rotateX(2deg) rotateY(1deg);
+  }
+  50% { 
+    transform: translateY(-4px) rotateX(0deg) rotateY(-1deg);
+  }
+  75% {
+    transform: translateY(-10px) rotateX(-1deg) rotateY(0deg);
+  }
+}
+
+/* Liquid Glass Effect */
+.liquid-glass {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 30%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.02) 70%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    -45deg,
+    transparent 40%,
+    rgba(0, 242, 255, 0.04) 45%,
+    rgba(139, 92, 246, 0.04) 50%,
+    rgba(212, 175, 55, 0.03) 55%,
+    transparent 60%
+  );
+  animation: liquid-shimmer 4s ease-in-out infinite;
+}
+
+@keyframes liquid-shimmer {
+  0%, 100% {
+    transform: translateX(-100%) skewX(-20deg);
+  }
+  50% {
+    transform: translateX(100%) skewX(-20deg);
+  }
+}
+
+/* Morphing Blob Background */
+.blob-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.blob-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 242, 255, 0.1) 0%,
+    rgba(139, 92, 246, 0.08) 30%,
+    rgba(212, 175, 55, 0.05) 50%,
+    transparent 70%
+  );
+  animation: blob-morph 20s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes blob-morph {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  25% {
+    transform: translate(5%, 5%) scale(1.1) rotate(90deg);
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+  50% {
+    transform: translate(-5%, 10%) scale(0.95) rotate(180deg);
+    border-radius: 50% 60% 30% 60% / 30% 60% 70% 40%;
+  }
+  75% {
+    transform: translate(10%, -5%) scale(1.05) rotate(270deg);
+    border-radius: 40% 60% 50% 40% / 60% 40% 50% 60%;
+  }
+}
+
+/* Iridescent Border */
+.iridescent-border {
+  position: relative;
+}
+
+.iridescent-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    45deg,
+    #00f2ff,
+    #8b5cf6,
+    #d4af37,
+    #00f2ff
+  );
+  background-size: 400% 400%;
+  border-radius: inherit;
+  animation: iridescent-shift 8s ease infinite;
+  z-index: -1;
+  filter: blur(4px);
+  opacity: 0.6;
+}
+
+@keyframes iridescent-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Depth Layers for UI Elements */
+.depth-layer {
+  position: relative;
+}
+
+.depth-layer-1 {
+  transform: translateZ(0);
+  transition: transform 0.3s ease;
+}
+
+.depth-layer-2 {
+  transform: translateZ(-10px) scale(0.98);
+  transition: transform 0.3s ease;
+}
+
+.depth-layer-3 {
+  transform: translateZ(-20px) scale(0.96);
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+/* Interactive depth on hover */
+.group-depth:hover .depth-layer-1 {
+  transform: translateZ(10px);
+}
+
+.group-depth:hover .depth-layer-2 {
+  transform: translateZ(0) scale(1.01);
+}
+
+.group-depth:hover .depth-layer-3 {
+  transform: translateZ(-10px) scale(0.99);
+  opacity: 0.9;
+}
+
+/* Glow Effects */
+.glow-cyan {
+  box-shadow: 
+    0 0 20px rgba(0, 242, 255, 0.3),
+    0 0 40px rgba(0, 242, 255, 0.15),
+    0 0 60px rgba(0, 242, 255, 0.1);
+}
+
+.glow-purple {
+  box-shadow: 
+    0 0 20px rgba(139, 92, 246, 0.3),
+    0 0 40px rgba(139, 92, 246, 0.15),
+    0 0 60px rgba(139, 92, 246, 0.1);
+}
+
+.glow-gold {
+  box-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.4),
+    0 0 40px rgba(212, 175, 55, 0.2),
+    0 0 60px rgba(212, 175, 55, 0.1);
+}
+
+.glow-rose-gold {
+  box-shadow: 
+    0 0 20px rgba(183, 110, 121, 0.3),
+    0 0 40px rgba(183, 110, 121, 0.15),
+    0 0 60px rgba(183, 110, 121, 0.1);
+}
+
+/* Text Glow Effects */
+.text-glow-cyan {
+  text-shadow: 
+    0 0 10px rgba(0, 242, 255, 0.5),
+    0 0 20px rgba(0, 242, 255, 0.3),
+    0 0 30px rgba(0, 242, 255, 0.2);
+}
+
+.text-glow-gold {
+  text-shadow: 
+    0 0 10px rgba(212, 175, 55, 0.6),
+    0 0 20px rgba(212, 175, 55, 0.4),
+    0 0 30px rgba(212, 175, 55, 0.2);
+}
+
+/* Premium Gradient Text */
+.text-premium-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--accent-main) 0%,
+    var(--accent-secondary) 35%,
+    var(--gold-primary) 65%,
+    var(--rose-gold) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-cosmic-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--ai-cyan) 0%,
+    var(--ai-purple) 50%,
+    var(--gold-primary) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* ==========================================================================

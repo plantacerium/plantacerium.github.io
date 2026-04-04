@@ -1,0 +1,43 @@
+---
+interface Props {
+  class?: string;
+  speed?: number;
+  direction?: 'vertical' | 'horizontal' | 'both';
+}
+
+const { 
+  class: className = '',
+  speed = 0.5,
+  direction = 'vertical'
+} = Astro.props;
+---
+
+<section 
+  class:list={['parallax-section', className]}
+  data-parallax
+  data-parallax-speed={speed}
+  data-parallax-direction={direction}
+>
+  <slot />
+</section>
+
+<script>
+  import { initParallax } from '../../utils/parallax';
+
+  document.addEventListener('astro:page-load', () => {
+    initParallax('[data-parallax]');
+  });
+</script>
+
+<style>
+  .parallax-section {
+    will-change: transform;
+    transition: transform 0.1s ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .parallax-section {
+      transform: none !important;
+    }
+  }
+</style>

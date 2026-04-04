@@ -44,7 +44,16 @@ plantacerium.github.io/
 │   │   ├── BlogCard.astro      # Blog post card component
 │   │   ├── NeuralPlayer.astro  # Audio-visual component
 │   │   ├── OptimizedImage.astro # Image optimization (astro:assets)
-│   │   └── PagefindSearch.astro # SEO-friendly search component
+│   │   ├── PagefindSearch.astro # SEO-friendly search component
+│   │   └── three/             # Three.js Immersive Experience
+│   │       ├── ImmersiveCanvas.astro
+│   │       ├── LoadingScreen.astro
+│   │       ├── CursorTrail.astro
+│   │       ├── TiltCard.astro
+│   │       └── ParallaxSection.astro
+│   ├── lib/
+│   │   ├── three/             # Three.js utilities
+│   │   └── cursor-trail.ts    # Cursor trail logic
 │   ├── content.config.ts      # Content collections schema
 │   ├── data/                   # Externalized data (easy to customize!)
 │   │   ├── portfolio.ts        # Portfolio projects
@@ -82,8 +91,9 @@ plantacerium.github.io/
 |------------|---------|---------|
 | Astro | 6.1.3 | Static site generator |
 | TypeScript | 5.4+ | Type safety |
+| Three.js | 0.183 | 3D immersive experience |
 | GSAP | 3.12.5 | Animations |
-| Fuse.js | 7.0.0 | Client-side search |
+| Pagefind | (bundled) | SEO-friendly search |
 | Shiki | (bundled) | Syntax highlighting |
 
 ## Key Features
@@ -97,6 +107,11 @@ plantacerium.github.io/
 | **Pagefind Search** | `src/components/PagefindSearch.astro` | SEO-friendly full-text search |
 | **Optimized Images** | `src/components/OptimizedImage.astro` | Image optimization with astro:assets |
 | **View Transitions** | `src/layouts/Layout.astro` | Smooth page navigation animations |
+| **Three.js 3D Scene** | `src/components/three/` | Premium immersive 3D background |
+| **Cursor Trail** | `src/components/three/CursorTrail.astro` | Holographic particle trail |
+| **TiltCard** | `src/components/three/TiltCard.astro` | 3D hover card effects |
+| **Premium Gold Accents** | `src/styles/global.css` | Gold, rose-gold, platinum colors |
+| **Enhanced Glassmorphism** | `src/styles/global.css` | Prismatic, holographic glass variants |
 
 ## Troubleshooting
 

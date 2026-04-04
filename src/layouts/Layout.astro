@@ -1,6 +1,9 @@
 ---
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
+import LoadingScreen from '../components/three/LoadingScreen.astro';
+import ImmersiveCanvas from '../components/three/ImmersiveCanvas.astro';
+import CursorTrail from '../components/three/CursorTrail.astro';
 
 interface Props {
   title: string;
@@ -30,9 +33,9 @@ const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
     <link rel="canonical" href={canonicalUrl} />
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/favicon.png" sizes="any" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="icon" type="image/png" href="/Plantacerium.png" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/Plantacerium.svg" />
+    <link rel="apple-touch-icon" href="/Plantacerium.png" />
     
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -61,6 +64,11 @@ const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
     <ClientRouter />
   </head>
   <body>
+    <!-- Three.js Immersive Background -->
+    <!-- <LoadingScreen /> -->
+    <ImmersiveCanvas />
+    <CursorTrail enableTrail={true} />
+
     <!-- Skip Link for Accessibility -->
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
@@ -399,6 +407,8 @@ const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
      CUERPO Y PIE DE PÁGINA
      ========================================================================== */
   .page-wrapper {
+    position: relative;
+    z-index: 10;
     min-height: calc(100vh - 160px);
     display: flex;
     flex-direction: column;

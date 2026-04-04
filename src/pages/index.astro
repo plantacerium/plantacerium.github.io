@@ -1,158 +1,245 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import type { CollectionEntry } from 'astro:content';
 import { portfolioNodes, getCategoryIcon } from '../data/portfolio';
 import PagefindSearch from '../components/PagefindSearch.astro';
+import BiofluidBlob from '../components/three/BiofluidBlob.astro';
+import ParallaxLayer from '../components/three/ParallaxLayer.astro';
 
 const posts = (await getCollection('blog')).sort(
-  (a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => b.data.date.valueOf() - a.data.date.valueOf()
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
 ---
 
-<Layout title="Plantacerium | Architect. Engineer. Strategist.">
-
-  <div class="scanline" aria-hidden="true"></div>
-
-  <main class="command-hub max-width-expanded" id="main-content">
-
-    <header class="hero-section glass-panel gs-reveal" transition:name="hero-section" transition:animate="fade">
-      <div class="system-status" role="status" aria-live="polite">
-        <span class="status-dot active" aria-hidden="true"></span>
-        <span class="mono-tag">MINERAL INTELLIGENCE: ONLINE</span>
+<Layout title="Plantacerium | Digital Architect & Consciousness Engineer">
+  <main class="max-width-expanded">
+    <section class="hero-section">
+      <BiofluidBlob size="xl" speed={25} />
+      <div class="hero-orb-container">
+        <div class="hero-orb orb-1"></div>
+        <div class="hero-orb orb-2"></div>
+        <div class="hero-orb orb-3"></div>
       </div>
-
-      <h1 class="architect-title" transition:name="page-title">Plantacerium</h1>
-      <h2 class="architect-subtitle text-gradient">Architect. Engineer. Strategist.</h2>
-
-      <p class="manifesto">
-        I am a Senior Software Engineer who operates where "impossible" meets "deployed."
-        My approach is one: <strong>Dream Big, Execute Immediately.</strong>
-        I don't wait for the future; I compile it.
-      </p>
-
-      <div class="toolchain-tags" role="list" aria-label="Tecnologías utilizadas">
-        <span class="badge" role="listitem">AI/LLM</span>
-        <span class="badge" role="listitem">RUST</span>
-        <span class="badge" role="listitem">PYTHON</span>
-        <span class="badge" role="listitem">LINUX/CLI</span>
+      <div class="hero-decoration">
+        <div class="deco-ring ring-1"></div>
+        <div class="deco-ring ring-2"></div>
+        <div class="deco-ring ring-3"></div>
       </div>
-
-      <div class="action-links">
-        <a href="https://github.com/plantacerium" target="_blank" rel="noopener noreferrer" class="btn btn-active" aria-label="Ver perfil de GitHub">
-          ⭐ GitHub Universe
-        </a>
-        <a href="https://www.youtube.com/@Plantacerium" target="_blank" rel="noopener noreferrer" class="btn" aria-label="Ver canal de YouTube">
-          ▶ Transmisiones (YouTube)
-        </a>
-      </div>
-    </header>
-
-    <section class="omni-search-container glass-panel gs-reveal" transition:name="search-section" transition:animate="fade">
-      <PagefindSearch />
-      
-      <div class="filter-controls">
-        <div class="filter-tags" role="status" aria-live="polite">
-          <span class="badge">Repositorios: {portfolioNodes.length}</span>
-          <span class="badge">Bitácoras: {posts.length}</span>
+      <div class="hero-content gs-reveal">
+        <div class="system-status badge-glow">
+          <span class="badge-dot ai"></span>
+          <span class="pulse-glow">SYSTEMS ONLINE</span>
         </div>
-        <button id="zenToggle" class="btn btn-zen" type="button" aria-pressed="false">
-          🧘‍♂️ Activar Modo Zen
+        <h1 class="architect-title">
+          <span class="title-char">P</span><span class="title-char">L</span><span class="title-char">A</span><span class="title-char">N</span><span class="title-char">T</span><span class="title-char">A</span><span class="title-char">C</span><span class="title-char">E</span><span class="title-char">R</span><span class="title-char">I</span><span class="title-char">U</span><span class="title-char">M</span>
+        </h1>
+        <div class="architect-subtitle subtitle-word">
+          <span>Digital</span>
+          <span class="accent-warm">//</span>
+          <span>Architect</span>
+          <span class="accent-warm">&</span>
+          <span>Consciousness</span>
+          <span class="accent-warm">//</span>
+          <span>Engineer</span>
+        </div>
+        <p class="manifesto gs-reveal">
+          Building the <strong>architecture of consciousness</strong> through code, meditation, and sacred geometry. 
+          <em>Transforming digital chaos into living art</em> — where algorithms meet emanation.
+        </p>
+        <div class="toolchain-tags gs-reveal">
+          <span class="badge-glow">
+            <span class="badge-dot ai"></span>
+            AI Agents
+          </span>
+          <span class="badge-glow">
+            <span class="badge-dot rust"></span>
+            Rust
+          </span>
+          <span class="badge-glow">
+            <span class="badge-dot python"></span>
+            Python
+          </span>
+          <span class="badge-glow">
+            <span class="badge-dot linux"></span>
+            Linux
+          </span>
+        </div>
+        <div class="action-links gs-reveal">
+          <a href="https://github.com/plantacerium" target="_blank" rel="noopener noreferrer" class="btn-premium glass-panel-holographic">
+            <span class="btn-glow"></span>
+            <span class="btn-icon">⚡</span>
+            GitHub Universe
+          </a>
+          <a href="https://www.youtube.com/@Plantacerium" target="_blank" rel="noopener noreferrer" class="btn-premium glass-panel-holographic">
+            <span class="btn-icon">📝</span>
+            YouTube Channel
+          </a>
+          <a href="/blog" class="btn-premium glass-panel-holographic">
+            <span class="btn-icon">📝</span>
+            Read Blog
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="omni-search-container gs-reveal">
+      <div class="search-header">
+        <h2 class="search-title">
+          <span class="search-icon">🔍</span>
+          Neural Search Matrix
+        </h2>
+        <p class="search-subtitle">Query across {portfolioNodes.length} nodes & {posts.length} articles in real-time</p>
+      </div>
+      <PagefindSearch />
+      <div class="filter-controls">
+        <div class="filter-tags">
+          <span class="stat-badge">
+            <span class="stat-number">{portfolioNodes.length}</span>
+            <span class="stat-label">Nodes</span>
+          </span>
+          <span class="stat-badge">
+            <span class="stat-number">{posts.length}</span>
+            <span class="stat-label">Articles</span>
+          </span>
+        </div>
+        <button id="zenToggle" class="btn-zen btn-secondary" aria-pressed="false">
+          <span class="zen-icon">🧘‍♂️</span>
+          <span class="zen-text">Modo Zen</span>
         </button>
       </div>
     </section>
 
-    <section class="portfolio-matrix" aria-label="Proyectos y bitácoras" transition:name="portfolio-section" transition:animate="slide">
-      <div class="node-grid" id="masterGrid" role="list">
-
-        {posts.map((post, index) => (
-          <article class:list={["repository-node", "glass-panel", "type-blog", "gs-node"]}
-                   data-title={post.data.title}
-                   data-desc={post.data.description}
-                   data-type="blog"
-                   role="listitem"
-                   style={`--item-index: ${index}`}
-                   transition:name={`card-${post.id}`}>
-            <a href={`/blog/${post.id}`} class="node-link">
-              <div class="node-header">
-                <span class="node-icon" aria-hidden="true">☕</span>
-                <span class="mono-tag domain-tag">LOG | {post.data.author}</span>
-              </div>
-              <h4 class="node-title text-gradient">{post.data.title}</h4>
-              <p class="node-impact">{post.data.description}</p>
-              <div class="node-footer">
-                <span class="execute-cmd">> read_memory_block()</span>
-                <span class="line-decorator" aria-hidden="true"></span>
-              </div>
-            </a>
+    <section class="portfolio-matrix gs-reveal">
+      <ParallaxLayer depth="mid" speed={0.3} class="section-content">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="title-accent">&lt;/&gt;</span>
+            Project Matrix
+            <span class="title-accent">{'{ }'}</span>
+          </h2>
+          <p class="section-subtitle">Navigate the constellation of consciousness</p>
+        </div>
+        <div class="node-grid">
+        {portfolioNodes.map((node) => (
+          <article class={`repository-node gs-node type-${node.category}`}>
+            <div class="card-content immersive-card">
+              <a href={node.url} class="node-link" target="_blank" rel="noopener noreferrer">
+                <div class="node-header">
+                  <span class="node-icon">{getCategoryIcon(node.category)}</span>
+                  <span class="domain-tag">{node.domain}</span>
+                </div>
+                <h3 class="node-title">{node.title}</h3>
+                <p class="node-impact">{node.impact}</p>
+                <div class="node-footer">
+                  <span class="execute-cmd">
+                    <span class="cmd-prompt">$</span>
+                    execute
+                  </span>
+                  <div class="line-decorator">
+                    <div class="line-glow"></div>
+                  </div>
+                </div>
+              </a>
+            </div>
           </article>
         ))}
-
-        {portfolioNodes.map((node, index) => (
-          <article class:list={["repository-node", "glass-panel", `type-${node.category}`, "gs-node"]}
-                   data-title={node.title}
-                   data-desc={node.impact}
-                   data-type="repo"
-                   role="listitem"
-                   style={`--item-index: ${index + posts.length}`}
-                   transition:name={`repo-${index}`}>
-            <a href={node.url} target="_blank" rel="noopener noreferrer" class="node-link" aria-label={`${node.title} - ${node.impact}`}>
-              <div class="node-header">
-                <span class="node-icon" aria-hidden="true">{getCategoryIcon(node.category)}</span>
-                <span class="mono-tag domain-tag">REPO | {node.domain}</span>
-              </div>
-              <h4 class="node-title">{node.title}</h4>
-              <p class="node-impact">{node.impact}</p>
-              <div class="node-footer">
-                <span class="execute-cmd">> git clone protocol</span>
-                <span class="line-decorator" aria-hidden="true"></span>
-              </div>
-            </a>
-          </article>
-        ))}
-
       </div>
-
-      <div id="noResults" class="hidden error-msg" role="alert" aria-live="polite">
-        <p>Error 404: No se detectaron anomalías ni registros con esos parámetros.</p>
-      </div>
+      </ParallaxLayer>
     </section>
 
-    <footer class="hub-footer glass-panel gs-reveal" role="contentinfo" transition:name="footer-section" transition:animate="fade">
+    <section class="blog-matrix gs-reveal">
+      <ParallaxLayer depth="near" speed={0.5} class="section-content">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="title-accent">☕</span>
+            Latest Articles
+            <span class="title-accent">{'{ }'}</span>
+          </h2>
+          <p class="section-subtitle">Reflections from the intersection of code and consciousness</p>
+        </div>
+        <div class="blog-grid">
+        {posts.slice(0, 6).map((post) => (
+          <article class="blog-card gs-node">
+            <div class="card-content immersive-card">
+              <a href={`/blog/${post.id}`} class="node-link">
+                <div class="node-header">
+                  <span class="node-icon">☕</span>
+                  <span class="domain-tag">{post.data.author}</span>
+                </div>
+                <h3 class="node-title">{post.data.title}</h3>
+                <p class="node-impact">{post.data.description}</p>
+                <div class="telemetry-mini">
+                  <span class="mono-tag">⏱️ {post.data.readTime}m</span>
+                  <span class="mono-tag">⭐ {post.data.rating}</span>
+                  <span class="mono-tag">📅 {new Intl.DateTimeFormat('es-ES').format(post.data.date)}</span>
+                </div>
+                <div class="node-footer">
+                  <span class="execute-cmd">
+                    <span class="cmd-prompt">$</span>
+                    init_reading
+                  </span>
+                  <div class="line-decorator">
+                    <div class="line-glow"></div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div class="section-cta">
+        <a href="/blog" class="btn-secondary glass-panel">
+          <span class="btn-icon">📚</span>
+          View All Articles ({posts.length})
+        </a>
+      </div>
+      </ParallaxLayer>
+    </section>
+  </main>
+
+  <footer class="hub-footer">
+    <div class="footer-glow"></div>
+    <div class="footer-content">
       <h3 class="title-display">🌐 Connect & Scale</h3>
       <p class="text-secondary">Available for high-level architectural consulting and breaking barriers in open source.</p>
 
-      <div class="social-grid" role="list" aria-label="Enlaces sociales">
-        <a href="https://ko-fi.com/plantacerium" target="_blank" rel="noopener noreferrer" class="social-link" role="listitem">☕ Support via Ko-Fi</a>
-        <a href="https://discord.gg/nbZqzwKXGS" target="_blank" rel="noopener noreferrer" class="social-link" role="listitem">💬 Neural Net (Discord)</a>
-        <a href="https://plantacerium.github.io/" target="_blank" class="social-link" role="listitem">📡 Central Command Hub</a>
+      <div class="signature gs-reveal">
+        <span class="footer-icon">⚙️</span>
+        Crafted with <span class="heart">♥</span> by Plantacerium
+        <span class="footer-icon">⚙️</span>
       </div>
-
-      <div class="signature">
-        Made with <span class="heart" aria-hidden="true">♥</span> and brain by <strong>Plantacerium</strong>
-      </div>
-    </footer>
-
-  </main>
+      <nav class="social-grid gs-reveal" aria-label="Social links">
+        <a href="https://github.com/plantacerium" class="social-link glass-panel" target="_blank" rel="noopener">
+          <span class="link-icon">🐙</span>
+          GitHub
+        </a>
+        <a href="https://ko-fi.com/plantacerium" target="_blank" rel="noopener noreferrer" class="social-link glass-panel" role="listitem">☕ Support via Ko-Fi</a>
+        <a href="https://discord.gg/nbZqzwKXGS" target="_blank" rel="noopener noreferrer" class="social-link glass-panel" role="listitem">💬 Neural Net (Discord)</a>
+      </nav>
+    </div>
+  </footer>
 </Layout>
 
 <script>
-  import { gsap } from "gsap";
+  import gsap from 'gsap';
 
-  document.addEventListener("astro:page-load", () => {
-    // Reinitialize GSAP animations after view transition
-    gsap.fromTo(".gs-reveal",
-      { y: 30, opacity: 0, filter: "blur(5px)" },
-      { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.8, stagger: 0.2, ease: "power2.out" }
+  document.addEventListener('DOMContentLoaded', () => {
+    gsap.fromTo('.gs-reveal',
+      { y: 40, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: 'power2.out', delay: 0.3 }
     );
 
     const nodesToAnimate = Array.from(document.querySelectorAll('.gs-node'));
     gsap.fromTo(nodesToAnimate,
-      { scale: 0.95, opacity: 0, y: 20 },
-      { scale: 1, opacity: 1, y: 0, duration: 0.5, stagger: 0.03, delay: 0.3, ease: "back.out(1.2)" }
+      { scale: 0.9, opacity: 0, y: 30 },
+      { scale: 1, opacity: 1, y: 0, duration: 0.6, stagger: 0.05, delay: 0.5, ease: 'back.out(1.2)' }
     );
 
-    // Zen mode toggle
+    gsap.fromTo('.badge-glow',
+      { boxShadow: '0 0 0 rgba(0, 242, 255, 0)' },
+      { boxShadow: '0 0 20px rgba(0, 242, 255, 0.3)', duration: 1.5, yoyo: true, repeat: -1, ease: 'power2.inOut' }
+    );
+
     const zenToggle = document.getElementById('zenToggle');
     zenToggle?.addEventListener('click', () => {
       document.body.classList.toggle('theme-zen');
@@ -160,67 +247,246 @@ const posts = (await getCollection('blog')).sort(
       const zenButton = zenToggle as HTMLButtonElement;
       
       zenButton.setAttribute('aria-pressed', String(isZen));
+      zenButton.classList.toggle('active', isZen);
 
       if (isZen) {
-        zenToggle.innerHTML = '⚡ Retornar a Alto Rendimiento';
-        gsap.fromTo("body", {opacity: 0.8}, {opacity: 1, duration: 1, ease: "power2.inOut"});
+        zenButton.innerHTML = '<span class="zen-icon">⚡</span><span class="zen-text">Alto Rendimiento</span>';
+        gsap.to('.hero-orb', { scale: 0.8, opacity: 0.5, duration: 1, ease: 'power2.out' });
       } else {
-        zenToggle.innerHTML = '🧘‍♂️ Activar Modo Zen';
-        gsap.fromTo("body", {opacity: 0.8}, {opacity: 1, duration: 0.5});
+        zenButton.innerHTML = '<span class="zen-icon">🧘‍♂️</span><span class="zen-text">Modo Zen</span>';
+        gsap.to('.hero-orb', { scale: 1, opacity: 1, duration: 1, ease: 'power2.out' });
       }
     });
+
+    const cards = document.querySelectorAll('.card-content');
+    cards.forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        gsap.to(card, { scale: 1.02, duration: 0.3, ease: 'power2.out' });
+      });
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card, { scale: 1, duration: 0.3, ease: 'power2.out' });
+      });
+    });
+
+    const chars = document.querySelectorAll('.title-char');
+    gsap.fromTo(chars,
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, delay: 0.2, ease: 'power2.out' }
+    );
+
+    const subtitleWords = document.querySelectorAll('.subtitle-word > span');
+    gsap.fromTo(subtitleWords,
+      { opacity: 0, x: -10 },
+      { opacity: 1, x: 0, duration: 0.4, stagger: 0.1, delay: 0.6, ease: 'power2.out' }
+    );
   });
 </script>
 
 <style>
+  .accent-warm {
+    color: var(--accent-warm);
+  }
+
   .max-width-expanded {
     max-width: 1600px;
     margin: 0 auto;
     padding: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: 4rem;
   }
 
   .hero-section {
-    padding: 4rem 2rem;
+    position: relative;
+    padding: 6rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    overflow: hidden;
+  }
+
+  .hero-orb-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+  }
+
+  .orb-1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--accent-main) 0%, transparent 70%);
+    top: 10%;
+    left: 10%;
+    animation: float-orb 8s ease-in-out infinite;
+  }
+
+  .orb-2 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, var(--accent-secondary) 0%, transparent 70%);
+    top: 30%;
+    right: 15%;
+    animation: float-orb 10s ease-in-out infinite reverse;
+  }
+
+  .orb-3 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, var(--gold-primary) 0%, transparent 70%);
+    bottom: 15%;
+    left: 30%;
+    animation: float-orb 12s ease-in-out infinite;
+  }
+
+  @keyframes float-orb {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.05); }
+    66% { transform: translate(-20px, 30px) scale(0.95); }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 4rem 3rem;
+    max-width: 900px;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-top: 1px solid var(--accent-main);
+    gap: 1.5rem;
+  }
+
+  .hero-decoration {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .deco-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+  }
+
+  .ring-1 { width: 600px; height: 600px; }
+  .ring-2 { width: 800px; height: 800px; animation: rotate-ring 30s linear infinite; }
+  .ring-3 { width: 1000px; height: 1000px; animation: rotate-ring 45s linear infinite reverse; }
+
+  @keyframes rotate-ring {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .system-status {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(0, 242, 255, 0.2);
+  }
+
+  .pulse-glow {
+    animation: pulse-text 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-text {
+    0%, 100% { text-shadow: 0 0 5px rgba(0, 242, 255, 0.5); }
+    50% { text-shadow: 0 0 15px rgba(0, 242, 255, 0.8), 0 0 25px rgba(0, 242, 255, 0.4); }
   }
 
   .architect-title {
-    font-size: 4rem;
-    letter-spacing: 2px;
-    margin: 1rem 0 0.5rem;
+    font-size: clamp(3rem, 8vw, 6rem);
+    letter-spacing: 4px;
     font-family: var(--font-display);
+    display: flex;
+    gap: 0.1em;
+  }
+
+  .title-char {
+    display: inline-block;
+    opacity: 0;
   }
 
   .architect-subtitle {
-    font-size: 1.5rem;
-    margin-bottom: 2rem;
-    letter-spacing: 4px;
+    display: flex;
+    gap: 0.5rem;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    letter-spacing: 2px;
     font-family: var(--font-mono);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .subtitle-word > span {
+    opacity: 0;
   }
 
   .manifesto {
-    max-width: 800px;
-    font-size: 1.2rem;
+    max-width: 700px;
+    font-size: 1.15rem;
     color: var(--text-secondary);
-    line-height: 1.8;
-    margin-bottom: 2rem;
+    line-height: 2;
+    margin: 1rem 0;
   }
 
-  .manifesto strong { color: var(--text-primary); }
+  .manifesto em {
+    font-style: normal;
+    color: var(--accent-secondary);
+  }
+
+  .manifesto strong {
+    font-weight: 600;
+  }
 
   .toolchain-tags {
     display: flex;
     gap: 1rem;
-    margin-bottom: 3rem;
     flex-wrap: wrap;
     justify-content: center;
+    margin: 1rem 0;
+  }
+
+  .badge-glow {
+    position: relative;
+    padding: 0.6rem 1.2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: badge-pulse 2s ease-in-out infinite;
+  }
+
+  .badge-dot.ai { background: var(--accent-secondary); }
+  .badge-dot.rust { background: #dea584; animation-delay: 0.3s; }
+  .badge-dot.python { background: #3572A5; animation-delay: 0.6s; }
+  .badge-dot.linux { background: var(--accent-main); animation-delay: 0.9s; }
+
+  @keyframes badge-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
   }
 
   .action-links {
@@ -228,13 +494,80 @@ const posts = (await getCollection('blog')).sort(
     gap: 1.5rem;
     flex-wrap: wrap;
     justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .btn-premium {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--accent-main), var(--accent-secondary));
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+
+  .btn-premium .btn-glow {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    animation: btn-shimmer 3s infinite;
+  }
+
+  @keyframes btn-shimmer {
+    100% { transform: translateX(100%); }
+  }
+
+  .btn-icon {
+    margin-right: 0.5rem;
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-main);
   }
 
   .omni-search-container {
-    padding: 2.5rem;
+    padding: 3rem;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 2rem;
+    margin-bottom: 21rem;
+  }
+
+  .search-header {
+    text-align: center;
+  }
+
+  .search-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+  }
+
+  .search-icon {
+    animation: search-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes search-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  .search-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
   }
 
   .filter-controls {
@@ -245,99 +578,362 @@ const posts = (await getCollection('blog')).sort(
     max-width: 600px;
     flex-wrap: wrap;
     gap: 1rem;
-    margin-top: 1.5rem;
   }
 
-  .filter-tags { display: flex; gap: 1rem; }
+  .filter-tags {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .stat-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--border-radius-sm);
+  }
+
+  .stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    color: var(--accent-main);
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+  }
 
   .btn-zen {
-    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(212, 163, 115, 0.1);
     border-color: var(--accent-warm);
     color: var(--accent-warm);
+    padding: 0.75rem 1.5rem;
   }
+
+  .btn-zen.active,
   .btn-zen:hover {
-    background: rgba(212, 163, 115, 0.1);
-    box-shadow: 0 0 15px rgba(212, 163, 115, 0.3);
+    background: rgba(212, 163, 115, 0.2);
+    box-shadow: 0 0 20px rgba(212, 163, 115, 0.3);
+  }
+
+  .portfolio-matrix {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .section-header {
+    text-align: center;
+    padding: 2rem 0;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .title-accent {
+    color: var(--accent-main);
+    font-family: var(--font-mono);
+  }
+
+  .section-subtitle {
+    color: var(--text-muted);
+    margin-top: 0.5rem;
   }
 
   .node-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .section-cta {
+    text-align: center;
+    padding: 2rem 0;
+  }
+
+  .telemetry-mini {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 0.75rem 0;
+    opacity: 0.8;
+  }
+
+  .mono-tag {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
   }
 
   .repository-node {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--panel-border);
-    transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
-    min-height: 250px;
+    min-height: 280px;
+  }
+
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-content::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+    pointer-events: none;
+  }
+
+  .card-content::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+    transition: left 0.6s ease;
+  }
+
+  .card-content:hover::after {
+    left: 150%;
+  }
+
+  .type-zen:hover { 
+    border-color: var(--accent-warm); 
+    box-shadow: 0 15px 40px rgba(212, 163, 115, 0.2);
+  }
+  .type-system:hover { 
+    border-color: var(--accent-main); 
+    box-shadow: 0 15px 40px rgba(0, 242, 255, 0.2);
+  }
+  .type-ui:hover { 
+    border-color: var(--accent-secondary); 
+    box-shadow: 0 15px 40px rgba(139, 92, 246, 0.2);
+  }
+  .type-blog:hover { 
+    border-color: var(--accent-warm); 
+    box-shadow: 0 15px 40px rgba(212, 163, 115, 0.2);
+  }
+
+  .blog-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 280px;
+  }
+
+  .blog-matrix {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
   }
 
   .node-link {
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: 1.5rem;
+    padding: 1.75rem;
     text-decoration: none;
     color: inherit;
+    position: relative;
+    z-index: 1;
   }
 
-  .type-blog:hover { border-color: var(--accent-secondary); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15); }
-  .type-system:hover { border-color: var(--accent-main); box-shadow: 0 10px 30px rgba(0, 242, 255, 0.15); }
-  .type-zen:hover { border-color: var(--accent-warm); box-shadow: 0 10px 30px rgba(212, 163, 115, 0.15); }
-  .type-ui:hover { border-color: #f472b6; box-shadow: 0 10px 30px rgba(244, 114, 182, 0.15); }
-
-  .repository-node:hover {
-    transform: translateY(-4px);
-    background: rgba(30, 30, 35, 0.9);
+  .node-header { 
+    margin-bottom: 1rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 0.75rem; 
   }
 
-  .node-header { margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-  .node-title { font-family: var(--font-display); font-size: 1.15rem; margin-bottom: 0.5rem; line-height: 1.3; }
-  .node-impact { font-size: 0.9rem; color: var(--text-secondary); flex-grow: 1; line-height: 1.5; }
-  .node-footer { margin-top: 1.5rem; display: flex; align-items: center; gap: 1rem; opacity: 0.7; }
-  .execute-cmd { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-main); }
-  .line-decorator { flex-grow: 1; height: 1px; background: linear-gradient(90deg, var(--accent-main), transparent); }
+  .node-icon {
+    font-size: 1.5rem;
+    filter: drop-shadow(0 0 8px currentColor);
+  }
 
-  .hidden { display: none; }
-  .error-msg { text-align: center; padding: 4rem; color: var(--accent-warm); font-family: var(--font-mono); }
+  .domain-tag {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.3rem 0.6rem;
+    font-size: 0.65rem;
+  }
+
+  .node-title { 
+    font-family: var(--font-display); 
+    font-size: 1.2rem; 
+    margin-bottom: 0.75rem; 
+    line-height: 1.3;
+    transition: all 0.3s ease;
+  }
+
+  .card-content:hover .node-title {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+
+  .node-impact { 
+    font-size: 0.9rem; 
+    color: var(--text-secondary); 
+    flex-grow: 1; 
+    line-height: 1.6; 
+  }
+
+  .node-footer { 
+    margin-top: 1.5rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 1rem; 
+  }
+
+  .execute-cmd { 
+    font-family: var(--font-mono); 
+    font-size: 0.75rem; 
+    color: var(--accent-main);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .cmd-prompt {
+    color: var(--accent-secondary);
+  }
+
+  .line-decorator { 
+    flex-grow: 1; 
+    height: 2px; 
+    background: linear-gradient(90deg, var(--panel-border), transparent);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .line-glow {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--accent-main), transparent);
+    animation: line-sweep 3s infinite;
+  }
+
+  @keyframes line-sweep {
+    0% { left: -100%; }
+    100% { left: 200%; }
+  }
 
   .hub-footer {
-    padding: 3rem;
+    position: relative;
+    padding: 4rem 3rem;
     text-align: center;
-    border-bottom: 1px solid var(--accent-secondary);
+    overflow: hidden;
+  }
+
+  .footer-glow {
+    position: absolute;
+    bottom: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .footer-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-icon {
+    margin-right: 0.5rem;
+    animation: orbit 10s linear infinite;
+    display: inline-block;
+  }
+
+  @keyframes orbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 
   .social-grid {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 2rem;
-    margin: 2rem 0;
+    gap: 1.5rem;
+    margin: 3rem 0;
   }
 
   .social-link {
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
     text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--border-radius-sm);
-    transition: all var(--transition-fast);
+    color: var(--text-primary);
+    transition: all 0.4s ease;
+    min-width: 180px;
+    justify-content: center;
   }
 
   .social-link:hover {
+    transform: translateY(-4px);
     border-color: var(--accent-warm);
-    color: var(--accent-warm);
-    background: rgba(212, 163, 115, 0.05);
+  }
+
+  .social-link:hover .link-icon {
+    transform: scale(1.2);
+  }
+
+  .link-icon {
+    font-size: 1.25rem;
+    transition: transform 0.3s ease;
   }
 
   .signature {
     margin-top: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: var(--text-muted);
   }
 
@@ -345,6 +941,7 @@ const posts = (await getCollection('blog')).sort(
     color: #ef4444;
     animation: heartbeat 1.5s infinite;
     display: inline-block;
+    font-size: 1.2rem;
   }
 
   @keyframes heartbeat {
@@ -355,11 +952,65 @@ const posts = (await getCollection('blog')).sort(
     60% { transform: scale(1); }
   }
 
-  @media (max-width: 1400px) { .node-grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 1024px) { .node-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 768px) {
-    .architect-title { font-size: 2.5rem; }
-    .filter-controls { flex-direction: column; justify-content: center; }
+  @media (max-width: 1024px) {
+    .hero-section {
+      padding: 4rem 1.5rem;
+      min-height: auto;
+    }
+
+    .hero-content {
+      padding: 3rem 2rem;
+    }
+
+    .deco-ring { display: none; }
   }
-  @media (max-width: 600px) { .node-grid { grid-template-columns: 1fr; } }
+
+  @media (max-width: 1200px) {
+    .node-grid,
+    .blog-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .max-width-expanded {
+      padding: 1rem;
+      gap: 3rem;
+    }
+
+    .architect-title {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .filter-controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .filter-tags {
+      justify-content: center;
+    }
+
+    .node-grid,
+    .blog-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .action-links {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .btn-premium, .btn-secondary {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-orb, .deco-ring, .badge-dot, .line-glow, .heart, .footer-icon {
+      animation: none;
+    }
+  }
 </style>

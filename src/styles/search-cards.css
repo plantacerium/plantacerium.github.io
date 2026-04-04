@@ -1,0 +1,179 @@
+/**
+ * Search Card Styles
+ * Shared styles for search result cards
+ */
+
+.search-result-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  background: rgba(24, 24, 27, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth), border-color var(--transition-fast);
+}
+
+.search-result-card.aura-blog {
+  border-color: rgba(212, 163, 115, 0.1);
+}
+
+.search-result-card.aura-repo {
+  border-color: rgba(0, 242, 255, 0.1);
+}
+
+.search-result-card:hover {
+  transform: translateY(-4px);
+  background: rgba(24, 24, 27, 0.8);
+}
+
+.search-result-card.aura-blog:hover {
+  border-color: rgba(212, 163, 115, 0.3);
+  box-shadow: 0 15px 35px rgba(212, 163, 115, 0.15);
+}
+
+.search-result-card.aura-repo:hover {
+  border-color: rgba(0, 242, 255, 0.3);
+  box-shadow: 0 15px 35px rgba(0, 242, 255, 0.15);
+}
+
+.search-card-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.search-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.search-card-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--starlight);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.search-card-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 5px currentColor;
+  animation: pulse-indicator 2s ease-in-out infinite;
+}
+
+.aura-blog .search-card-indicator {
+  background-color: var(--coffee-caramel);
+  color: var(--coffee-caramel);
+}
+
+.aura-repo .search-card-indicator {
+  background-color: var(--accent-main);
+  color: var(--accent-main);
+}
+
+@keyframes pulse-indicator {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.search-card-type {
+  color: var(--stardust);
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+}
+
+.search-card-body {
+  flex-grow: 1;
+}
+
+.search-card-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+  color: var(--coffee-crema);
+  transition: color var(--transition-fast);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.search-result-card:hover .search-card-title {
+  color: var(--starlight);
+}
+
+.search-card-title mark,
+.search-card-desc mark {
+  background: rgba(0, 242, 255, 0.25);
+  color: var(--accent-main);
+  padding: 0 0.15em;
+  border-radius: 2px;
+}
+
+.search-card-desc {
+  font-size: 0.9rem;
+  color: var(--stardust);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.search-card-desc mark {
+  background: rgba(139, 92, 246, 0.25);
+  color: var(--accent-secondary);
+}
+
+.search-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  font-family: var(--font-mono);
+}
+
+.search-card-action {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--starlight);
+  font-weight: 500;
+}
+
+.search-card-action-icon {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.search-card-arrow {
+  font-size: 1.1rem;
+  color: var(--stardust);
+  transition: all 0.3s ease;
+}
+
+.search-result-card:hover .search-card-arrow {
+  color: var(--accent-main);
+  transform: translateX(4px);
+}

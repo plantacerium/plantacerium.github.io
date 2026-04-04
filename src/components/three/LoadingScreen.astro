@@ -1,0 +1,474 @@
+---
+interface Props {
+  autoInit?: boolean;
+}
+
+const { autoInit = true } = Astro.props;
+---
+
+<div id="loading-screen" class="loading-screen" data-loading-screen>
+  <div class="loading-content">
+    <div class="loading-logo">
+      <svg viewBox="0 0 100 100" class="logo-svg">
+        <defs>
+          <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" class="stop-cyan" />
+            <stop offset="50%" class="stop-purple" />
+            <stop offset="100%" class="stop-gold" />
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logo-gradient)" stroke-width="2" class="logo-ring ring-1" />
+        <circle cx="50" cy="50" r="35" fill="none" stroke="url(#logo-gradient)" stroke-width="1.5" class="logo-ring ring-2" />
+        <circle cx="50" cy="50" r="25" fill="none" stroke="url(#logo-gradient)" stroke-width="1" class="logo-ring ring-3" />
+        <circle cx="50" cy="50" r="8" fill="url(#logo-gradient)" class="logo-core" />
+      </svg>
+    </div>
+    
+    <h1 class="loading-title">Plantacerium</h1>
+    <p class="loading-subtitle">Initializing Neural Interface</p>
+    
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-text">
+        <span id="progress-percent">0</span>%
+      </div>
+    </div>
+    
+    <div class="loading-stats" id="loading-stats">
+      <div class="stat">
+        <span class="stat-label">WebGL</span>
+        <span class="stat-value" id="stat-webgl">-</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Particles</span>
+        <span class="stat-value" id="stat-particles">-</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Quality</span>
+        <span class="stat-value" id="stat-quality">-</span>
+      </div>
+    </div>
+    
+    <div class="loading-dots">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  </div>
+  
+  <div class="scanline"></div>
+  <div class="vignette"></div>
+</div>
+
+<script>
+  import { detectWebGL, getParticleCount } from '../../utils/webgl';
+
+  interface LoadingScreen {
+    element: HTMLElement;
+    progressFill: HTMLElement;
+    progressPercent: HTMLElement;
+    statsWebgl: HTMLElement;
+    statsParticles: HTMLElement;
+    statsQuality: HTMLElement;
+    targetProgress: number;
+    currentProgress: number;
+    isComplete: boolean;
+  }
+
+  class LoadingScreenManager {
+    private screen: LoadingScreen | null = null;
+    private animationFrame: number | null = null;
+    private resolve: (() => void) | null = null;
+    private isFirstLoad: boolean = false;
+
+    async init() {
+      const element = document.getElementById('loading-screen');
+      if (!element) return;
+
+      // Only show on first page load, not during view transitions
+      const isViewTransition = sessionStorage.getItem('view-transition-completed');
+      
+      if (isViewTransition) {
+        element.style.display = 'none';
+        return;
+      }
+      
+      this.isFirstLoad = true;
+      const caps = detectWebGL();
+      
+      this.screen = {
+        element,
+        progressFill: document.getElementById('progress-fill')!,
+        progressPercent: document.getElementById('progress-percent')!,
+        statsWebgl: document.getElementById('stat-webgl')!,
+        statsParticles: document.getElementById('stat-particles')!,
+        statsQuality: document.getElementById('stat-quality')!,
+        targetProgress: 0,
+        currentProgress: 0,
+        isComplete: false
+      };
+
+      this.screen.statsWebgl.textContent = caps.supported ? `WebGL ${caps.version}` : 'CSS Fallback';
+      this.screen.statsParticles.textContent = caps.supported ? String(getParticleCount(caps)) : 'N/A';
+      this.screen.statsQuality.textContent = caps.supported ? caps.performanceLevel.toUpperCase() : 'Standard';
+
+      await new Promise<void>((resolve) => {
+        this.resolve = resolve;
+        this.animate();
+      });
+    }
+
+    setProgress(progress: number) {
+      if (this.screen) {
+        this.screen.targetProgress = Math.min(100, Math.max(0, progress));
+      }
+    }
+
+    complete() {
+      this.setProgress(100);
+      if (this.screen) {
+        this.screen.isComplete = true;
+      }
+    }
+
+    private animate() {
+      if (!this.screen) return;
+
+      const diff = this.screen.targetProgress - this.screen.currentProgress;
+      if (Math.abs(diff) > 0.1) {
+        this.screen.currentProgress += diff * 0.1;
+      } else {
+        this.screen.currentProgress = this.screen.targetProgress;
+      }
+
+      this.screen.progressFill.style.width = `${this.screen.currentProgress}%`;
+      this.screen.progressPercent.textContent = String(Math.round(this.screen.currentProgress));
+
+      if (this.screen.isComplete && this.screen.currentProgress >= 99) {
+        this.fadeOut();
+        return;
+      }
+
+      this.animationFrame = requestAnimationFrame(() => this.animate());
+    }
+
+    private fadeOut() {
+      if (!this.screen) return;
+
+      this.screen.element.classList.add('fade-out');
+      
+      setTimeout(() => {
+        if (this.screen) {
+          this.screen.element.style.display = 'none';
+        }
+        // Mark view transition as completed for this session
+        sessionStorage.setItem('view-transition-completed', 'true');
+        if (this.resolve) {
+          this.resolve();
+        }
+      }, 600);
+    }
+  }
+
+  const manager = new LoadingScreenManager();
+  
+  (window as any).loadingScreen = {
+    setProgress: (p: number) => manager.setProgress(p),
+    complete: () => manager.complete(),
+    init: () => manager.init()
+  };
+
+  // Check if we should show loading screen
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => manager.init());
+  } else {
+    manager.init();
+  }
+
+  // Listen for view transitions to hide loading screen
+  document.addEventListener('astro:before-swap', () => {
+    const screen = document.getElementById('loading-screen');
+    if (screen) {
+      screen.style.display = 'none';
+    }
+  });
+</script>
+
+<style>
+  .loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--bg-base) 0%, #0a0014 50%, var(--bg-base) 100%);
+    opacity: 1;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+  }
+
+  .loading-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .loading-screen[style*="display: none"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .loading-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 3rem;
+  }
+
+  .loading-logo {
+    width: 120px;
+    height: 120px;
+  }
+
+  .logo-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.5));
+  }
+
+  .logo-ring {
+    transform-origin: center;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 283;
+    animation: draw-ring 1.5s ease-out forwards;
+  }
+
+  .ring-1 { animation-delay: 0s; }
+  .ring-2 { animation-delay: 0.2s; }
+  .ring-3 { animation-delay: 0.4s; }
+
+  @keyframes draw-ring {
+    to { stroke-dashoffset: 0; }
+  }
+
+  .logo-core {
+    opacity: 0;
+    animation: pulse-core 2s ease-in-out infinite, fade-in 0.4s ease-out 0.6s forwards;
+  }
+
+  @keyframes pulse-core {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  .stop-cyan { stop-color: #00f2ff; }
+  .stop-purple { stop-color: #8b5cf6; }
+  .stop-gold { stop-color: #d4a373; }
+
+  .loading-title {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, var(--accent-main), var(--accent-secondary), var(--coffee-caramel));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 40px rgba(0, 242, 255, 0.3);
+    opacity: 0;
+    animation: fade-slide-in 0.5s ease-out 0.7s forwards;
+  }
+
+  .loading-subtitle {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fade-slide-in 0.5s ease-out 0.9s forwards;
+  }
+
+  @keyframes fade-slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    to { opacity: 1; }
+  }
+
+  .progress-container {
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    opacity: 0;
+    animation: fade-slide-in 0.5s ease-out 1s forwards;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-main), var(--accent-secondary), var(--coffee-caramel));
+    border-radius: 2px;
+    transition: width 0.3s ease-out;
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8));
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  .progress-text {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    letter-spacing: 0.2em;
+  }
+
+  .loading-stats {
+    display: flex;
+    gap: 2rem;
+    opacity: 0;
+    animation: fade-slide-in 0.5s ease-out 1.1s forwards;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .stat-value {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-main);
+    letter-spacing: 0.1em;
+  }
+
+  .loading-dots {
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fade-in 0.5s ease-out 1.2s forwards;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent-main);
+    border-radius: 50%;
+    animation: dot-pulse 1.4s ease-in-out infinite;
+  }
+
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes dot-pulse {
+    0%, 80%, 100% {
+      opacity: 0.3;
+      transform: scale(0.8);
+    }
+    40% {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: 0 0 10px var(--accent-main);
+    }
+  }
+
+  .scanline {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .loading-screen {
+      display: none;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .loading-content {
+      padding: 2rem;
+    }
+
+    .loading-logo {
+      width: 80px;
+      height: 80px;
+    }
+
+    .loading-title {
+      font-size: 1.5rem;
+    }
+
+    .progress-container {
+      width: 200px;
+    }
+
+    .loading-stats {
+      gap: 1rem;
+    }
+  }
+</style>

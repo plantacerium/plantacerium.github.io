@@ -21,6 +21,24 @@ This document outlines recommended improvements for the Plantacerium template, f
 | 7 | Integrate BlogCard component | ✅ Done | Updated with shared utilities and proper accessibility |
 | 8 | Pagefind search integration | ✅ Done | Created `PagefindSearch.astro`, indexes pages at build |
 | 9 | Image optimization | ✅ Done | Created `OptimizedImage.astro` using `astro:assets` |
+| 10 | Three.js Immersive Experience | ✅ Done | Full 3D scene with particles, geometry, shaders, loading screen |
+| 11 | Premium Gold Accents | ✅ Done | Added `--gold-primary`, `--gold-light`, glow effects, premium gradients |
+| 12 | Cursor Trail Effect | ✅ Done | Holographic particle cursor trail |
+| 13 | TiltCard 3D Hover | ✅ Done | Glassmorphism cards with 3D tilt and glare effect |
+| 14 | Parallax System | ✅ Done | Scroll and mouse-based parallax utilities |
+| 15 | Loading Screen Fix | ✅ Done | Only shows on first load, respects view transitions |
+| 16 | Cursor Trail Enhancement | ✅ Done | Symmetrical, smooth, color-cycling trail with glow |
+| 17 | Biofluid Glassmorphism | ✅ Done | Living organic glass effects with animations |
+| 18 | Immersive Card Enhancement | ✅ Done | New `.immersive-card` class with biofluid shimmer + 3D tilt + glow |
+| 19 | Three-Column Layout | ✅ Done | Portfolio and blog sections now use 3-column grid with responsive breakpoints |
+| 20 | Blog Section on Homepage | ✅ Done | Added "Latest Articles" section with latest 6 posts |
+| 21 | Unified Search | ✅ Done | Search now queries both portfolio nodes and blog articles |
+| 22 | Immersive Search UI | ✅ Done | 4-column card grid with 3D effects, glow, animations |
+| 23 | Fuzzy Search Engine | ✅ Done | Custom fuzzy matching with weighted scoring and highlighting |
+| 24 | Atomicity Refactoring | ✅ Done | Search logic extracted to lib/search.ts, styles to search-cards.css |
+| 25 | Biofluid Morphing Blob | ✅ Done | Created BiofluidBlob component with CSS morphing animations |
+| 26 | Animated Border Effects | ✅ Done | Created AnimatedBorder component with gradient/glow/shimmer/plasma variants |
+| 27 | Parallax Depth Layers | ✅ Done | Created ParallaxLayer component for mouse + scroll parallax |
 
 ---
 
@@ -236,6 +254,11 @@ getAuthorConfig(author)        // Returns complete config object
 | `src/data/crew.ts` | Externalized crew data |
 | `src/components/PagefindSearch.astro` | SEO-friendly full-text search |
 | `src/components/OptimizedImage.astro` | Image optimization using astro:assets |
+| `src/components/three/BiofluidBlob.astro` | CSS morphing blob animation for hero |
+| `src/components/three/AnimatedBorder.astro` | Animated gradient/glow borders for cards |
+| `src/components/three/ParallaxLayer.astro` | Mouse + scroll parallax depth layers |
+| `src/lib/search.ts` | Core search utilities and types |
+| `src/styles/search-cards.css` | Shared search card styles |
 
 ---
 

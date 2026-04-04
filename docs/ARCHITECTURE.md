@@ -31,7 +31,24 @@ plantacerium.github.io/
 │   │   ├── BlogCard.astro
 │   │   ├── NeuralPlayer.astro
 │   │   ├── OptimizedImage.astro
-│   │   └── PagefindSearch.astro
+│   │   ├── PagefindSearch.astro
+│   │   └── three/             # Three.js Immersive Experience
+│   │       ├── ImmersiveCanvas.astro
+│   │       ├── LoadingScreen.astro
+│   │       ├── CursorTrail.astro
+│   │       ├── TiltCard.astro
+│   │       └── ParallaxSection.astro
+│   │
+│   ├── lib/                   # Shared libraries
+│   │   ├── three/           # Three.js utilities
+│   │   │   ├── particles.ts
+│   │   │   └── geometry.ts
+│   │   ├── cursor-trail.ts
+│   │   └── search.ts       # Fuzzy search utilities
+│   │
+│   ├── styles/              # Shared styles
+│   │   ├── global.css
+│   │   └── search-cards.css # Search card styles
 │   │
 │   ├── data/                  # Externalized data (easy to customize!)
 │   │   ├── portfolio.ts       # Portfolio items
@@ -174,13 +191,49 @@ function telemetryExtractor() {
 
 | File | Route | Description |
 |------|-------|-------------|
-| `index.astro` | `/` | Homepage/Command Hub |
+| `index.astro` | `/` | Homepage with Hero, Search, Portfolio (3-col), Blog (3-col) |
 | `tripulacion.astro` | `/tripulacion` | Toolchain showcase |
-| `blog/index.astro` | `/blog` | Blog archive |
+| `blog/index.astro` | `/blog` | Blog archive (3 columns) |
 
 ### Dynamic Routes
 
 `blog/[slug].astro` generates routes for each blog post using `entry.id`.
+
+### Homepage Layout
+
+The homepage is structured as a premium immersive experience:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    HERO SECTION                         │
+│  Floating orbs, animated title, decorative rings        │
+├─────────────────────────────────────────────────────────┤
+│                 SEARCH SECTION                          │
+│  Pagefind-powered search across all content             │
+├─────────────────────────────────────────────────────────┤
+│               PORTFOLIO MATRIX                          │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐       │
+│  │  Project 1  │ │  Project 2  │ │  Project 3  │       │
+│  └─────────────┘ └─────────────┘ └─────────────┘       │
+│  (3 columns, immersive-card effect)                    │
+├─────────────────────────────────────────────────────────┤
+│                BLOG MATRIX                              │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐       │
+│  │  Post 1    │ │  Post 2     │ │  Post 3     │       │
+│  └─────────────┘ └─────────────┘ └─────────────┘       │
+│  Latest 6 posts (immersive-card effect)                │
+├─────────────────────────────────────────────────────────┤
+│                    FOOTER                              │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Responsive Grid System
+
+| Breakpoint | Columns |
+|------------|---------|
+| > 1200px | 3 columns |
+| 768px - 1200px | 2 columns |
+| < 768px | 1 column |
 
 ---
 
@@ -209,11 +262,13 @@ Features:
 ### PagefindSearch Component (`src/components/PagefindSearch.astro`)
 
 Features:
-- SEO-friendly full-text search
-- Debounced input
-- Keyboard accessible
-- Mobile responsive
-- Works without JavaScript for basic functionality
+- **4-Column Grid Results**: Premium card layout for search results
+- **3D Immersive Effects**: Transform, glow, and perspective on focus
+- **Client-Side Fallback**: Works in both dev and production
+- **SEO-friendly**: Powered by Pagefind in production
+- **Responsive Grid**: 4 → 3 → 2 → 1 columns at breakpoints
+- **Animated Entrance**: Staggered card animations
+- **Status Indicator**: Shows search mode (Pagefind vs Client)
 
 ### OptimizedImage Component (`src/components/OptimizedImage.astro`)
 
@@ -371,16 +426,51 @@ View Transitions automatically respect `prefers-reduced-motion` via CSS media qu
 
 ---
 
-## Search (Pagefind)
+## Search System
 
-The template includes SEO-friendly search powered by Pagefind.
+The template includes an atomic search system with fuzzy matching.
 
-### Configuration
+### Architecture
 
-In `astro.config.mjs`:
+```
+src/
+├── lib/
+│   └── search.ts           # Core search logic
+├── styles/
+│   └── search-cards.css    # Shared card styles
+└── components/
+    └── PagefindSearch.astro # Search UI
+```
 
-```javascript
-import pagefind from 'astro-pagefind';
+### Search Utilities (`src/lib/search.ts`)
+
+Reusable search functions:
+
+```typescript
+export interface SearchItem {
+  title: string;
+  url: string;
+  domain?: string;
+  category?: string;
+  description?: string;
+}
+
+export function fuzzySearch(items: SearchItem[], query: string, maxResults?: number)
+export function highlightMatch(text: string, query: string): string
+export function escapeHtml(text: string): string
+```
+
+### Shared Styles (`src/styles/search-cards.css`)
+
+Reusable CSS classes for search result cards:
+
+```css
+.search-result-card      /* Card container */
+.search-card-link       /* Inner link wrapper */
+.search-card-header      /* Header with badge */
+.search-card-title       /* Title with highlight support */
+.search-card-desc        /* Description with highlight */
+```
 
 integrations: [
   pagefind({
@@ -414,6 +504,94 @@ Located at `src/components/PagefindSearch.astro`:
 ### Note
 
 Pagefind index is generated during `pnpm build`. Search is available in production builds only.
+
+---
+
+## Three.js Immersive Experience
+
+The template includes a premium 3D immersive experience using Three.js.
+
+### Components
+
+| Component | File | Description |
+|-----------|------|-------------|
+| `ImmersiveCanvas` | `src/components/three/ImmersiveCanvas.astro` | Main Three.js scene with particles, geometry, and shaders |
+| `LoadingScreen` | `src/components/three/LoadingScreen.astro` | Animated loading screen with progress bar |
+| `CursorTrail` | `src/components/three/CursorTrail.astro` | Holographic particle cursor trail |
+| `TiltCard` | `src/components/three/TiltCard.astro` | 3D hover card with glare effect |
+| `ParallaxSection` | `src/components/three/ParallaxSection.astro` | Scroll-based parallax container |
+
+### Features
+
+- **Particle System**: 3000+ animated particles with custom shaders
+- **Floating Geometry**: Glass/crystal polyhedrons (icosahedron, octahedron, torus)
+- **Nebula Layer**: Distant particle cloud for depth
+- **Holographic Grid**: Animated floor grid
+- **Energy Rings**: Rotating torus rings
+- **Mouse Reactive**: Scene responds to cursor movement
+- **Performance Adaptive**: Automatic quality adjustment based on device
+
+### WebGL Detection
+
+Located in `src/utils/webgl.ts`:
+
+```typescript
+interface WebGLCapabilities {
+  supported: boolean;
+  version: number;
+  renderer: string;
+  vendor: string;
+  maxTextureSize: number;
+  isMobile: boolean;
+  prefersReducedMotion: boolean;
+  performanceLevel: 'high' | 'medium' | 'low';
+}
+
+export function detectWebGL(): WebGLCapabilities
+export function getParticleCount(level: WebGLCapabilities): number
+export function shouldUse3D(effects: WebGLCapabilities): boolean
+```
+
+### Performance Levels
+
+| Level | Particles | Geometry Complexity | Target |
+|-------|-----------|---------------------|--------|
+| High | 5000 | Full | Desktop with dedicated GPU |
+| Medium | 2000 | Half | Desktop with integrated GPU |
+| Low | 500 | Quarter | Mobile devices |
+
+### TiltCard Component
+
+Creates 3D card hover effect with glare:
+
+```astro
+<TiltCard tiltStrength={15} glareOpacity={0.3}>
+  <div>Your card content</div>
+</TiltCard>
+```
+
+### Cursor Trail
+
+Multi-colored particle trail following cursor:
+
+```astro
+<CursorTrail enableTrail={true} trailColor="#00f2ff" maxParticles={20} />
+```
+
+### Parallax Effects
+
+```astro
+<ParallaxSection speed={0.5} direction="vertical">
+  <div>Parallax content</div>
+</ParallaxSection>
+```
+
+### Accessibility
+
+- Automatically disabled for `prefers-reduced-motion`
+- Graceful fallback to CSS-only animations
+- WebGL not required - falls back to CSS effects
+- Mobile optimized with reduced complexity
 
 ---
 

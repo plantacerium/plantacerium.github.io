@@ -1,0 +1,216 @@
+---
+interface Props {
+  class?: string;
+  variant?: 'gradient' | 'glow' | 'shimmer' | 'plasma';
+  colorScheme?: 'cyan' | 'purple' | 'gold' | 'mixed';
+  speed?: number;
+}
+
+const {
+  class: className = '',
+  variant = 'gradient',
+  colorScheme = 'mixed',
+  speed = 4
+} = Astro.props;
+
+const colors = {
+  cyan: { primary: '#00f2ff', secondary: '#00d4e0' },
+  purple: { primary: '#8b5cf6', secondary: '#a78bfa' },
+  gold: { primary: '#d4af37', secondary: '#f4d58d' },
+  mixed: { primary: '#00f2ff', secondary: '#8b5cf6' }
+};
+
+const c = colors[colorScheme];
+---
+
+<div 
+  class:list={['animated-border-container', `border-${variant}`, className]}
+  data-border-speed={speed}
+  style={`--border-primary: ${c.primary}; --border-secondary: ${c.secondary}; --border-speed: ${speed}s;`}
+>
+  <div class="border-layer border-layer-1"></div>
+  <div class="border-layer border-layer-2"></div>
+  <div class="border-gradient"></div>
+  <div class="border-content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .animated-border-container {
+    position: relative;
+    border-radius: var(--border-radius-lg);
+    background: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    overflow: hidden;
+  }
+
+  .border-content {
+    position: relative;
+    z-index: 2;
+    padding: 1.5rem;
+  }
+
+  .border-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .border-gradient {
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    z-index: 0;
+  }
+
+  /* Gradient Border Variant */
+  .border-gradient {
+    background: linear-gradient(
+      var(--angle, 0deg),
+      var(--border-primary),
+      var(--border-secondary),
+      var(--border-primary)
+    );
+    background-size: 300% 300%;
+    animation: gradient-shift var(--border-speed) linear infinite;
+  }
+
+  .border-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: var(--panel-bg);
+    border-radius: calc(var(--border-radius-lg) - 2px);
+  }
+
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  /* Glow Border Variant */
+  .border-glow .border-layer-1 {
+    inset: -4px;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      var(--border-primary) 50%,
+      transparent 70%
+    );
+    animation: glow-flow var(--border-speed) linear infinite;
+    filter: blur(8px);
+    opacity: 0.8;
+  }
+
+  .border-glow .border-layer-2 {
+    inset: -1px;
+    background: linear-gradient(
+      45deg,
+      var(--border-primary),
+      var(--border-secondary),
+      var(--border-primary)
+    );
+    animation: glow-flow var(--border-speed) linear infinite reverse;
+    border-radius: inherit;
+  }
+
+  @keyframes glow-flow {
+    0% { transform: translateX(-100%) rotate(0deg); }
+    100% { transform: translateX(100%) rotate(360deg); }
+  }
+
+  /* Shimmer Border Variant */
+  .border-shimmer .border-layer-1 {
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+    animation: shimmer-slide calc(var(--border-speed) * 2) ease-in-out infinite;
+    transform: translateX(-100%);
+  }
+
+  .border-shimmer .border-layer-2 {
+    inset: -1px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: inherit;
+    transition: border-color 0.3s ease;
+  }
+
+  .animated-border-container:hover .border-layer-2 {
+    border-color: var(--border-primary);
+    box-shadow: 
+      0 0 20px color-mix(in srgb, var(--border-primary) 30%, transparent),
+      inset 0 0 20px color-mix(in srgb, var(--border-primary) 10%, transparent);
+  }
+
+  @keyframes shimmer-slide {
+    0% { transform: translateX(-100%) rotate(0deg); }
+    100% { transform: translateX(200%) rotate(0deg); }
+  }
+
+  /* Plasma Border Variant */
+  .border-plasma .border-layer-1 {
+    inset: -3px;
+    background: conic-gradient(
+      from 0deg at 50% 50%,
+      var(--border-primary),
+      var(--border-secondary),
+      var(--border-primary)
+    );
+    animation: plasma-rotate var(--border-speed) linear infinite;
+    border-radius: inherit;
+    filter: blur(4px);
+    opacity: 0.7;
+  }
+
+  .border-plasma .border-layer-2 {
+    inset: 0;
+    background: radial-gradient(
+      ellipse at 30% 30%,
+      rgba(255, 255, 255, 0.05) 0%,
+      transparent 50%
+    );
+  }
+
+  @keyframes plasma-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Hover Effects */
+  .animated-border-container:hover {
+    transform: translateY(-4px);
+  }
+
+  .border-glow:hover .border-layer-1 {
+    opacity: 1;
+    filter: blur(12px);
+  }
+
+  .border-plasma:hover .border-layer-1 {
+    opacity: 1;
+    animation-duration: calc(var(--border-speed) / 2);
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .border-layer-1,
+    .border-gradient {
+      animation: none;
+      background: linear-gradient(45deg, var(--border-primary), var(--border-secondary));
+    }
+  }
+</style>

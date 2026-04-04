@@ -1,0 +1,161 @@
+---
+interface Props {
+  class?: string;
+  tiltStrength?: number;
+  glareOpacity?: number;
+}
+
+const { 
+  class: className = '',
+  tiltStrength = 15,
+  glareOpacity = 0.3
+} = Astro.props;
+---
+
+<div 
+  class:list={['tilt-card', className]}
+  data-tilt-strength={tiltStrength}
+  data-tilt-glare={glareOpacity}
+>
+  <div class="tilt-card-inner">
+    <div class="tilt-card-glare"></div>
+    <div class="tilt-card-content">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<script>
+  class TiltCard {
+    private element: HTMLElement;
+    private inner: HTMLElement;
+    private glare: HTMLElement;
+    private bounds: DOMRect;
+    private tiltStrength: number;
+    private glareOpacity: number;
+    private isHovering: boolean = false;
+
+    constructor(element: HTMLElement) {
+      this.element = element;
+      this.inner = element.querySelector('.tilt-card-inner')!;
+      this.glare = element.querySelector('.tilt-card-glare')!;
+      this.tiltStrength = parseFloat(element.dataset.tiltStrength || '15');
+      this.glareOpacity = parseFloat(element.dataset.tiltGlare || '0.3');
+      this.bounds = this.element.getBoundingClientRect();
+      
+      this.bindEvents();
+    }
+
+    private bindEvents() {
+      window.addEventListener('resize', () => {
+        this.bounds = this.element.getBoundingClientRect();
+      });
+
+      this.element.addEventListener('mouseenter', () => {
+        this.isHovering = true;
+        this.inner.style.transition = 'none';
+      });
+
+      this.element.addEventListener('mouseleave', () => {
+        this.isHovering = false;
+        this.inner.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.5s ease';
+        this.resetTilt();
+      });
+
+      this.element.addEventListener('mousemove', (e) => this.handleMove(e.clientX, e.clientY));
+      this.element.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 0) {
+          this.handleMove(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: true });
+    }
+
+    private handleMove(clientX: number, clientY: number) {
+      if (!this.isHovering) return;
+
+      const mouseX = clientX - this.bounds.left;
+      const mouseY = clientY - this.bounds.top;
+      
+      const percentX = mouseX / this.bounds.width;
+      const percentY = mouseY / this.bounds.height;
+      
+      const rotateX = (percentY - 0.5) * this.tiltStrength;
+      const rotateY = (percentX - 0.5) * -this.tiltStrength;
+
+      this.inner.style.transform = `
+        perspective(1000px)
+        rotateX(${rotateX}deg)
+        rotateY(${rotateY}deg)
+        scale3d(1.02, 1.02, 1.02)
+      `;
+
+      const glareX = percentX * 100;
+      const glareY = percentY * 100;
+      this.glare.style.background = `
+        radial-gradient(
+          circle at ${glareX}% ${glareY}%,
+          rgba(255, 255, 255, ${this.glareOpacity}) 0%,
+          transparent 50%
+        )
+      `;
+      this.glare.style.opacity = '1';
+    }
+
+    private resetTilt() {
+      this.inner.style.transform = `
+        perspective(1000px)
+        rotateX(0deg)
+        rotateY(0deg)
+        scale3d(1, 1, 1)
+      `;
+      this.glare.style.opacity = '0';
+    }
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    const cards = document.querySelectorAll('.tilt-card');
+    cards.forEach(card => new TiltCard(card as HTMLElement));
+  });
+</script>
+
+<style>
+  .tilt-card {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+  }
+
+  .tilt-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  .tilt-card-glare {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+  }
+
+  .tilt-card-content {
+    position: relative;
+    z-index: 1;
+    transform-style: preserve-3d;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tilt-card-inner {
+      transform: none !important;
+      transition: none !important;
+    }
+    
+    .tilt-card-glare {
+      display: none;
+    }
+  }
+</style>

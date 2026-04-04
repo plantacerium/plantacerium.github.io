@@ -1,0 +1,159 @@
+---
+interface Props {
+  class?: string;
+  speed?: number;
+  direction?: 'up' | 'down' | 'left' | 'right';
+  depth?: 'near' | 'mid' | 'far';
+  enableMouseTracking?: boolean;
+}
+
+const {
+  class: className = '',
+  speed = 0.5,
+  direction = 'up',
+  depth = 'mid',
+  enableMouseTracking = true
+} = Astro.props;
+
+const directionMap = {
+  up: 'translateY',
+  down: 'translateY',
+  left: 'translateX',
+  right: 'translateX'
+};
+
+const directionValue = direction === 'up' || direction === 'left' ? '-' : '';
+---
+
+<div 
+  class:list={['parallax-layer', `depth-${depth}`, className]}
+  data-parallax-speed={speed}
+  data-parallax-direction={direction}
+  data-parallax-tracking={enableMouseTracking}
+  style={`--px-direction: ${directionMap[direction]}; --px-value: ${directionValue};`}
+>
+  <slot />
+</div>
+
+<script>
+  class ParallaxController {
+    private elements: NodeListOf<HTMLElement>;
+    private mouseX: number = 0;
+    private mouseY: number = 0;
+    private targetMouseX: number = 0;
+    private targetMouseY: number = 0;
+    private animationFrame: number | null = null;
+
+    constructor() {
+      this.elements = document.querySelectorAll('.parallax-layer');
+      this.bindEvents();
+      this.animate();
+    }
+
+    private bindEvents() {
+      window.addEventListener('mousemove', (e) => {
+        this.targetMouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+        this.targetMouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      });
+
+      window.addEventListener('scroll', () => {
+        this.updateScrollParallax();
+      }, { passive: true });
+
+      window.addEventListener('resize', () => {
+        this.updateDimensions();
+      }, { passive: true });
+    }
+
+    private updateScrollParallax() {
+      const scrollY = window.scrollY;
+
+      this.elements.forEach((element) => {
+        const speed = parseFloat(element.dataset.parallaxSpeed || '0.5');
+        const rect = element.getBoundingClientRect();
+        const elementCenter = rect.top + rect.height / 2;
+        const viewportCenter = window.innerHeight / 2;
+        const distanceFromCenter = (elementCenter - viewportCenter) / window.innerHeight;
+
+        const trackingEnabled = element.dataset.parallaxTracking === 'true';
+        const mouseOffset = trackingEnabled ? {
+          x: this.mouseX * speed * 10,
+          y: this.mouseY * speed * 10
+        } : { x: 0, y: 0 };
+
+        const scrollOffset = distanceFromCenter * speed * 50;
+
+        const direction = element.dataset.parallaxDirection || 'up';
+        const value = element.style.getPropertyValue('--px-value') || '-';
+
+        if (direction === 'up' || direction === 'down') {
+          element.style.transform = `translateY(${value}${scrollOffset}px) translateY(${mouseOffset.y}px)`;
+        } else {
+          element.style.transform = `translateX(${value}${scrollOffset}px) translateX(${mouseOffset.x}px)`;
+        }
+      });
+    }
+
+    private updateDimensions() {
+      // Handled by getBoundingClientRect in updateScrollParallax
+    }
+
+    private animate() {
+      this.mouseX += (this.targetMouseX - this.mouseX) * 0.05;
+      this.mouseY += (this.targetMouseY - this.mouseY) * 0.05;
+
+      this.updateScrollParallax();
+
+      this.animationFrame = requestAnimationFrame(() => this.animate());
+    }
+
+    public destroy() {
+      if (this.animationFrame) {
+        cancelAnimationFrame(this.animationFrame);
+      }
+    }
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    const existing = (window as any).parallaxController;
+    if (existing) existing.destroy();
+    
+    (window as any).parallaxController = new ParallaxController();
+  });
+
+  document.addEventListener('astro:before-swap', () => {
+    const existing = (window as any).parallaxController;
+    if (existing) existing.destroy();
+  });
+</script>
+
+<style>
+  .parallax-layer {
+    will-change: transform;
+    transition: transform 0.1s ease-out;
+  }
+
+  .depth-near {
+    z-index: 10;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+  }
+
+  .depth-mid {
+    z-index: 5;
+    filter: drop-shadow(0 5px 20px rgba(0, 0, 0, 0.2));
+  }
+
+  .depth-far {
+    z-index: 1;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.1));
+    opacity: 0.8;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .parallax-layer {
+      transform: none !important;
+      filter: none !important;
+      opacity: 1 !important;
+    }
+  }
+</style>
