@@ -1,0 +1,115 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+// Obtener y ordenar las bitácoras por fecha (de más reciente a más antigua)
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Layout title="Bitácoras | El Archivo Neuronal">
+  <div class="scanline"></div>
+
+  <main class="blog-archive max-width-expanded">
+
+    <header class="archive-header glass-panel gs-reveal">
+      <div class="system-status">
+        <span class="status-dot active"></span>
+        <span class="mono-tag">SISTEMA DE ARCHIVOS: ONLINE</span>
+      </div>
+
+      <h1 class="architect-title">Archivo de <span class="text-gradient">Consciencia</span></h1>
+      <p class="manifesto">
+        Registros de telemetría, arquitectura de sistemas y reflexiones de la intersección entre el código y la mente.
+      </p>
+
+      <div class="stats-row">
+        <span class="badge">Total de Registros: {posts.length}</span>
+      </div>
+    </header>
+
+    <section class="posts-grid">
+      {posts.length === 0 ? (
+        <div class="empty-state">
+          <p class="error-msg">⚠️ Base de datos vacía. No hay bitácoras válidas en src/content/blog.</p>
+        </div>
+      ) : (
+        posts.map((post) => (
+          <article class="repository-node glass-panel type-blog gs-node">
+            <a href={`/blog/${post.id}`} class="node-link">
+              <div class="node-header">
+                <span class="node-icon">☕</span>
+                <span class="mono-tag domain-tag">{post.data.author} | {new Intl.DateTimeFormat('es-ES').format(post.data.date)}</span>
+              </div>
+              <h2 class="node-title text-gradient">{post.data.title}</h2>
+              <p class="node-impact">{post.data.description}</p>
+
+              <div class="telemetry-mini">
+                <span class="mono-tag">⏱️ {post.data.readTime}m</span>
+                <span class="mono-tag">⭐ {post.data.rating}</span>
+              </div>
+
+              <div class="node-footer">
+                <span class="execute-cmd">> init_reading_protocol()</span>
+                <span class="line-decorator"></span>
+              </div>
+            </a>
+          </article>
+        ))
+      )}
+    </section>
+  </main>
+</Layout>
+
+<script>
+  import { gsap } from "gsap";
+  document.addEventListener("DOMContentLoaded", () => {
+    gsap.fromTo(".gs-reveal", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8 });
+    // CORRECCIÓN GSAP:
+    gsap.fromTo(".gs-node", { scale: 0.95, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, delay: 0.4 });
+  });
+</script>
+
+<style>
+  .max-width-expanded { max-width: 1400px; margin: 0 auto; padding: 2rem; display: flex; flex-direction: column; gap: 3rem; }
+  .archive-header { padding: 4rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; border-top: 1px solid var(--accent-secondary); }
+  .architect-title { font-size: 3.5rem; font-family: var(--font-display); margin: 1rem 0; }
+  .manifesto { max-width: 600px; color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 2rem; }
+
+/* MATRIZ DE 3 COLUMNAS EXACTAS */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  /* Responsividad: Bajar a 2 columnas en pantallas medianas (Tablets) */
+  @media (max-width: 1100px) {
+    .posts-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Responsividad: Bajar a 1 columna en pantallas pequeñas (Móviles) */
+  @media (max-width: 768px) {
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .repository-node { display: flex; flex-direction: column; border: 1px solid var(--panel-border); transition: transform 0.3s; min-height: 250px; }
+  .repository-node:hover { transform: translateY(-5px); border-color: var(--accent-secondary); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15); }
+  .node-link { padding: 2rem; display: flex; flex-direction: column; height: 100%; text-decoration: none; color: inherit; }
+
+  .node-header { margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+  .node-title { font-size: 1.5rem; margin-bottom: 1rem; line-height: 1.3; font-family: var(--font-display); }
+  .node-impact { color: var(--text-secondary); flex-grow: 1; line-height: 1.6; margin-bottom: 1.5rem; }
+
+  .telemetry-mini { display: flex; gap: 1rem; margin-bottom: 1.5rem; opacity: 0.8; }
+  .node-footer { display: flex; align-items: center; gap: 1rem; opacity: 0.6; }
+  .execute-cmd { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-main); }
+  .line-decorator { flex-grow: 1; height: 1px; background: linear-gradient(90deg, var(--accent-main), transparent); }
+
+  .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem; border: 1px dashed var(--accent-warm); }
+  .error-msg { color: var(--accent-warm); font-family: var(--font-mono); }
+</style>

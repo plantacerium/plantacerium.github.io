@@ -1,0 +1,279 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+// 1. OBTENCIÓN DE RUTAS ESTÁTICAS (La Matriz de Direcciones)
+export async function getStaticPaths() {
+  const blogEntries = await getCollection('blog');
+
+  return blogEntries.map((entry) => ({
+    // EL ARREGLO CRÍTICO: En la nueva API, usamos entry.id
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+// Declaramos el tipado exacto que espera Astro
+interface Props {
+  entry: CollectionEntry<'blog'>;
+}
+
+// 2. INICIALIZACIÓN DEL NODO
+const { entry } = Astro.props;
+
+// EL NUEVO MOTOR DE RENDERIZADO
+const { Content } = await render(entry);
+
+// Extraemos la metadata (asegurando valores por defecto si tu plugin no los generó)
+const { title, description, date, readTime = 5, paragraphs = 10, author, rating } = entry.data;
+
+// Formateo de fecha de la telemetría
+const formattedDate = new Intl.DateTimeFormat('es-ES', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}).format(date);
+
+// Asignar el "Aura" visual dependiendo de quién escribió el log
+const getAuthorAura = (authorType: string) => {
+  switch (authorType) {
+    case 'Humano': return 'text-caramel';
+    case 'LLM': return 'text-ai-purple';
+    case 'SSM': return 'text-ai-cyan';
+    case 'Híbrido': return 'text-gradient';
+    default: return 'text-starlight';
+  }
+};
+const auraClass = getAuthorAura(author);
+---
+
+<Layout title={`${title} | Terminal Café`}>
+
+  <div class="reading-progress-bar" id="readingProgress"></div>
+
+  <main class="post-environment">
+
+    <nav class="post-navigation">
+      <a href="/blog" class="btn-return">
+        <span class="icon">←</span> Volver al Archivo
+      </a>
+    </nav>
+
+    <article class="post-container glass-panel">
+
+      <header class="post-header">
+        <div class="telemetry-bar">
+          <div class="telemetry-item">
+            <span class="pulse-dot"></span>
+            <time datetime={date.toISOString()}>{formattedDate}</time>
+          </div>
+          <div class="telemetry-item">
+            <span class="mono-tag">Latencia: {readTime} min</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="mono-tag">Bloques: {paragraphs}</span>
+          </div>
+        </div>
+
+        <h1 class="post-title">{title}</h1>
+        <p class="post-description">{description}</p>
+
+        <div class="author-signature">
+          Orquestado por: <span class={`author-name ${auraClass}`}>{author}</span>
+          <span class="rating-badge">Alineación: ⭐ {rating}</span>
+        </div>
+      </header>
+
+      <div class="separator-line"></div>
+
+      <section class="mdx-content">
+        <Content />
+      </section>
+
+      <footer class="post-footer">
+        <div class="end-of-transmission">
+          <span class="mono-tag">> Fin de la transmisión.</span>
+          <a href="#" class="btn-return-top">↑ Ascender</a>
+        </div>
+      </footer>
+
+    </article>
+  </main>
+</Layout>
+
+<script>
+  // Script de Arquitectura: Barra de progreso de lectura
+  window.addEventListener('scroll', () => {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (winScroll / height) * 100;
+    const progressBar = document.getElementById('readingProgress');
+    if (progressBar) {
+      progressBar.style.width = scrolled + '%';
+    }
+  });
+</script>
+
+<style>
+  /* ==========================================================================
+     ENTORNO DEL POST Y ESTRUCTURA
+     ========================================================================== */
+  .reading-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-main), var(--accent-secondary));
+    width: 0%;
+    z-index: 1000;
+    transition: width 0.1s ease-out;
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  .post-environment {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem 6rem;
+  }
+
+  .post-navigation {
+    margin-bottom: 2rem;
+  }
+
+  .btn-return {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .btn-return:hover {
+    color: var(--accent-main);
+  }
+
+  .post-container {
+    padding: 3rem 4rem;
+  }
+
+  /* ==========================================================================
+     CABECERA DEL POST (Telemetría)
+     ========================================================================== */
+  .post-header { margin-bottom: 3rem; }
+
+  .telemetry-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    align-items: center;
+  }
+
+  .telemetry-item { display: flex; align-items: center; gap: 0.4rem; }
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--accent-main);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent-glow);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .post-title { font-size: 3rem; line-height: 1.2; margin-bottom: 1rem; color: var(--text-primary); font-family: var(--font-display); }
+  .post-description { font-size: 1.25rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 2rem; }
+
+  .author-signature {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--border-radius-sm);
+    border-left: 2px solid var(--panel-border);
+  }
+
+  .author-name { font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+  .separator-line {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    margin-bottom: 3rem;
+  }
+
+  /* ==========================================================================
+     ESTILOS DEL CONTENIDO RENDERIZADO (MDX -> HTML)
+     ========================================================================== */
+  .mdx-content { font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary); }
+
+  .mdx-content h2, .mdx-content h3, .mdx-content h4 { color: var(--text-primary); margin-top: 3rem; margin-bottom: 1rem; font-family: var(--font-display); }
+  .mdx-content h2 { font-size: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; }
+  .mdx-content h3 { font-size: 1.5rem; color: var(--accent-warm); }
+
+  .mdx-content p { margin-bottom: 1.5rem; }
+  .mdx-content a { color: var(--accent-main); text-decoration: underline; text-decoration-color: rgba(0, 242, 255, 0.3); text-underline-offset: 4px; transition: all var(--transition-fast); }
+  .mdx-content a:hover { color: var(--text-primary); text-decoration-color: var(--accent-main); background: rgba(0, 242, 255, 0.1); }
+
+  .mdx-content ul, .mdx-content ol { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+  .mdx-content li { margin-bottom: 0.5rem; }
+  .mdx-content li::marker { color: var(--accent-secondary); }
+
+  .mdx-content pre {
+    background: #09090b !important;
+    padding: 1.5rem;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-left: 3px solid var(--accent-main);
+    overflow-x: auto;
+    margin: 2rem 0;
+    font-size: 0.95rem;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+  }
+  .mdx-content code { font-family: var(--font-mono); }
+  .mdx-content p code, .mdx-content li code { background: rgba(255, 255, 255, 0.05); padding: 0.2em 0.4em; border-radius: 4px; color: var(--accent-warm); font-size: 0.9em; }
+
+  .mdx-content blockquote {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(212, 163, 115, 0.05);
+    border-left: 4px solid var(--accent-warm);
+    border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+    font-style: italic;
+    color: var(--text-primary);
+  }
+  .mdx-content blockquote p:last-child { margin-bottom: 0; }
+
+  /* ==========================================================================
+     PIE DEL POST
+     ========================================================================== */
+  .post-footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .end-of-transmission { display: flex; justify-content: space-between; align-items: center; }
+  .btn-return-top {
+    font-family: var(--font-mono); color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; padding: 0.5rem 1rem; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--border-radius-sm); transition: all var(--transition-fast);
+  }
+  .btn-return-top:hover { color: var(--accent-main); border-color: var(--accent-main); }
+
+  @media (max-width: 768px) {
+    .post-container { padding: 2rem 1.5rem; }
+    .post-title { font-size: 2.2rem; }
+    .author-signature { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  }
+</style>

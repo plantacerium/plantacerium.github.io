@@ -1,0 +1,28 @@
+{
+  "hologramName": "Orquestador Híbrido LLM-SSM",
+  "description": "Diagrama de flujo de cómo los modelos de lenguaje enrutan peticiones en la cafetería espacial.",
+  "baseImage": "/assets/holograms/hybrid-arch.webp",
+  "initialZoom": 1.2,
+  "markers": [
+    {
+      "id": "node-user-input",
+      "xPos": 15.5,
+      "yPos": 50.0,
+      "title": "Terminal del Usuario",
+      "details": "Punto de entrada de las peticiones.",
+      "status": "active",
+      "animationType": "breathe",
+      "connectsTo": ["node-router"]
+    },
+    {
+      "id": "node-router",
+      "xPos": 45.0,
+      "yPos": 50.0,
+      "title": "Enrutador SSM (Mamba)",
+      "details": "Inferencia ultrarrápida. Decide si la tarea requiere un LLM pesado o puede resolverse localmente.",
+      "status": "syncing",
+      "animationType": "pulse",
+      "connectsTo": ["node-llm", "node-local-cache"]
+    }
+  ]
+}

@@ -1,0 +1,305 @@
+/* ==========================================================================
+   1. VARIABLES DEL SISTEMA (ADN VISUAL Y TEMAS)
+   ========================================================================== */
+:root {
+  /* --- Geometría y Física --- */
+  --sidebar-width: 380px;
+  --glass-blur: blur(16px);
+  --border-radius-lg: 16px;
+  --border-radius-md: 12px;
+  --border-radius-sm: 6px;
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+
+  /* --- Tema Base (Espacio Profundo / Default) --- */
+  --bg-base: #050507;
+  --panel-bg: rgba(15, 15, 20, 0.65);
+  --panel-border: rgba(255, 255, 255, 0.05);
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #475569;
+
+  --accent-main: #00f2ff; /* Neón Cian (Tecnología/SSM) */
+  --accent-glow: rgba(0, 242, 255, 0.3);
+  --accent-secondary: #8b5cf6; /* Violeta Profundo (LLM/Conocimiento) */
+  --accent-warm: #d4a373; /* Caramelo (Calidez Humana/Café) */
+
+  /* --- Tipografía --- */
+  --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Orbitron', var(--font-sans); /* Para títulos de hologramas */
+}
+
+/* --- Variación de Tema: QUANTUM (Alta Energía / Procesamiento) --- */
+body.theme-quantum {
+  --bg-base: #0a0014;
+  --panel-bg: rgba(20, 0, 30, 0.7);
+  --panel-border: rgba(139, 92, 246, 0.2);
+  --accent-main: #c084fc;
+  --accent-glow: rgba(192, 132, 252, 0.4);
+  --text-secondary: #d8b4fe;
+}
+
+/* --- Variación de Tema: ZEN (Meditación / Enfoque Profundo) --- */
+body.theme-zen {
+  --bg-base: #12100e;
+  --panel-bg: rgba(30, 25, 22, 0.75);
+  --panel-border: rgba(212, 163, 115, 0.15);
+  --accent-main: #d4a373;
+  --accent-glow: rgba(212, 163, 115, 0.2);
+  --text-secondary: #e6ccb2;
+}
+
+/* ==========================================================================
+   2. RESETEO Y MOTOR DE RENDERIZADO
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-main) var(--bg-base);
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background-color var(--transition-smooth);
+  /* Malla de fondo sutil para el aspecto de "plano de ingeniería" */
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-position: center center;
+}
+
+::selection {
+  background-color: var(--accent-main);
+  color: var(--bg-base);
+}
+
+/* ==========================================================================
+   3. ARQUITECTURA GLASSMORPHISM (Paneles y Contenedores)
+   ========================================================================== */
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+   4. TIPOGRAFÍA Y JERARQUÍA
+   ========================================================================== */
+h1, h2, h3, .title-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--accent-main), var(--accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mono-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  color: var(--accent-main);
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   5. CONTROLES E INTERFACES (Botones y Formularios)
+   ========================================================================== */
+.btn {
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--accent-main);
+  box-shadow: 0 0 15px var(--accent-glow);
+  color: var(--accent-main);
+  transform: translateY(-2px);
+}
+
+.btn-active {
+  background: var(--accent-main);
+  color: var(--bg-base);
+  border-color: var(--accent-main);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.btn-active:hover {
+  background: #ffffff;
+  color: var(--bg-base);
+}
+
+/* ==========================================================================
+   6. ELEMENTOS DEL HOLOGRAMA Y VISUALIZADOR NEURONAL
+   ========================================================================== */
+.neural-environment {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Nodos interactivos sobre la imagen (Marcadores de datos) */
+.neural-node {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--accent-main);
+  border-radius: 50%;
+  transform: translate(-50%, -50%); /* Centrar en coordenadas exactas */
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.neural-node::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  border: 1px solid var(--accent-main);
+  border-radius: 50%;
+  animation: radar-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Líneas de conexión SVG */
+#svg-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.connection-line {
+  stroke: var(--accent-main);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  opacity: 0.5;
+  animation: line-flow 20s linear infinite;
+}
+
+/* ==========================================================================
+   7. ESTADOS DEL SISTEMA Y ANIMACIONES
+   ========================================================================== */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent-main);
+}
+
+.status-dot.idle { background-color: var(--text-muted); }
+.status-dot.active { animation: blink 1s infinite; }
+.status-dot.error { background-color: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+
+/* Keyframes de la nave */
+@keyframes blink {
+  0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--accent-glow); }
+  50% { opacity: 0.4; box-shadow: none; }
+}
+
+@keyframes radar-ping {
+  75%, 100% { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes line-flow {
+  to { stroke-dashoffset: -1000; }
+}
+
+/* Efecto de escaneo tipo Holograma/Terminal antiguo */
+.scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0),
+    rgba(0, 242, 255, 0.05),
+    rgba(255, 255, 255, 0)
+  );
+  background-size: 100% 8px;
+  animation: scan 8s linear infinite;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.6;
+}
+
+@keyframes scan {
+  0% { background-position: 0 -100vh; }
+  100% { background-position: 0 100vh; }
+}
+
+/* ==========================================================================
+   8. RESPONSIVIDAD (Adaptación a Dispositivos Móviles)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .neural-environment {
+    flex-direction: column;
+  }
+  
+  #sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 40vh;
+    border-right: none;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  
+  #main-stage {
+    height: 60vh;
+  }
+}

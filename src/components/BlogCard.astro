@@ -1,0 +1,248 @@
+---
+// Importamos tipos si es necesario, Astro infiere bien desde las colecciones
+const { post } = Astro.props;
+const { title, description, date, readTime, paragraphs, rating, author } = post.data;
+
+// Lógica de Presentación (Arquitectura de Datos)
+// Formateamos la fecha a un formato legible y elegante
+const formattedDate = new Intl.DateTimeFormat('es-ES', {
+  year: 'numeric',
+  month: 'short',
+  day: '2-digit',
+}).format(date);
+
+// Asignamos un "Aura" (clase CSS) basada en el agente creador
+const getAuthorAura = (authorType: string) => {
+  switch (authorType) {
+    case 'Humano': return 'aura-human';   // Tono caramelo/café cálido
+    case 'LLM': return 'aura-llm';       // Tono violeta profundo (procesamiento pesado)
+    case 'SSM': return 'aura-ssm';       // Tono cian rápido (inferencia ligera)
+    case 'Híbrido': return 'aura-hybrid'; // Gradiente galáctico
+    default: return 'aura-neutral';
+  }
+};
+
+const auraClass = getAuthorAura(author);
+---
+
+<article 
+  class={`blog-card glass-panel ${auraClass}`} 
+  data-title={title} 
+  data-desc={description}
+>
+  <a href={`/blog/${post.slug}`} class="card-link">
+    
+    <header class="card-header">
+      <div class="author-badge">
+        <span class="pulse-indicator"></span>
+        {author}
+      </div>
+      <time datetime={date.toISOString()} class="telemetry-date">
+        {formattedDate}
+      </time>
+    </header>
+
+    <div class="card-body">
+      <h2 class="card-title">{title}</h2>
+      <p class="card-desc">{description}</p>
+    </div>
+    
+    <footer class="card-footer">
+      <div class="stat-group">
+        <span class="stat-icon">⏱️</span>
+        <span class="stat-value">{readTime}m</span>
+        <span class="stat-label">Latencia</span>
+      </div>
+      
+      <div class="stat-group">
+        <span class="stat-icon">📝</span>
+        <span class="stat-value">{paragraphs}</span>
+        <span class="stat-label">Bloques</span>
+      </div>
+
+      <div class="stat-group rating-group">
+        <span class="stat-icon">⭐</span>
+        <span class="stat-value">{rating}</span>
+        <span class="stat-label">Alineación</span>
+      </div>
+    </footer>
+  </a>
+</article>
+
+<style>
+  /* ==========================================================================
+     ESTRUCTURA BASE DE LA TARJETA (El Ticket / Log)
+     ========================================================================== */
+  .blog-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    /* Reutilizamos el glass-panel de global.css, pero añadimos transiciones específicas */
+    background: rgba(24, 24, 27, 0.4); 
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    /* Transición tipo 'respiración' para no fatigar visualmente */
+    transition: transform var(--transition-smooth), 
+                box-shadow var(--transition-smooth), 
+                border-color var(--transition-fast);
+  }
+
+  .card-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* ==========================================================================
+     HOVER & AURAS (Reacción al Agente Creador)
+     ========================================================================== */
+  .blog-card:hover {
+    transform: translateY(-4px);
+    background: rgba(24, 24, 27, 0.8);
+  }
+
+  /* Aura Humana: Calidez de la Cafetería */
+  .aura-human:hover {
+    border-color: var(--coffee-caramel);
+    box-shadow: 0 8px 30px rgba(212, 163, 115, 0.15);
+  }
+  .aura-human .pulse-indicator { background-color: var(--coffee-caramel); }
+
+  /* Aura LLM: Profundidad Analítica */
+  .aura-llm:hover {
+    border-color: var(--ai-purple);
+    box-shadow: 0 8px 30px rgba(138, 43, 226, 0.15);
+  }
+  .aura-llm .pulse-indicator { background-color: var(--ai-purple); }
+
+  /* Aura SSM: Velocidad y Eficiencia */
+  .aura-ssm:hover {
+    border-color: var(--ai-cyan);
+    box-shadow: 0 8px 30px rgba(0, 242, 254, 0.15);
+  }
+  .aura-ssm .pulse-indicator { background-color: var(--ai-cyan); }
+
+  /* Aura Híbrida: Sinergia Humano-Máquina */
+  .aura-hybrid:hover {
+    border-image-source: linear-gradient(45deg, var(--coffee-caramel), var(--ai-cyan));
+    border-image-slice: 1;
+    box-shadow: 0 8px 30px rgba(0, 242, 254, 0.1);
+  }
+  .aura-hybrid .pulse-indicator { 
+    background: linear-gradient(45deg, var(--coffee-caramel), var(--ai-cyan)); 
+  }
+
+  /* ==========================================================================
+     CABECERA (Metadatos de Nivel 1)
+     ========================================================================== */
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .author-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--starlight);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .pulse-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    box-shadow: 0 0 5px currentColor;
+  }
+
+  .telemetry-date {
+    color: var(--stardust);
+    text-transform: uppercase;
+  }
+
+  /* ==========================================================================
+     CUERPO (El Contenido Principal)
+     ========================================================================== */
+  .card-body {
+    flex-grow: 1;
+  }
+
+  .card-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+    color: var(--coffee-crema);
+    transition: color var(--transition-fast);
+  }
+
+  .blog-card:hover .card-title {
+    color: var(--starlight); /* Se ilumina al interactuar */
+  }
+
+  .card-desc {
+    font-size: 0.95rem;
+    color: var(--stardust);
+    line-height: 1.5;
+    /* Truncar texto a 3 líneas para mantener consistencia visual en el Grid */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ==========================================================================
+     PIE DE TARJETA (Telemetría de Nivel 2)
+     ========================================================================== */
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    font-family: var(--font-mono);
+  }
+
+  .stat-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+  }
+
+  .rating-group {
+    align-items: flex-end; /* Alinea la valoración a la derecha para equilibrio visual */
+  }
+
+  .stat-value {
+    font-size: 0.9rem;
+    color: var(--starlight);
+    font-weight: 500;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    color: #71717a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .stat-icon {
+    font-size: 0.8rem;
+    margin-right: 0.2rem;
+    opacity: 0.8;
+  }
+</style>

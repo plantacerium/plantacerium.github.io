@@ -1,0 +1,128 @@
+---
+// src/components/NeuralPlayer.astro
+const { post, coreography, audioTrack } = Astro.props;
+---
+
+<div class="neural-environment theme-quantum">
+  <div id="loader"><div class="spinner"></div><div id="loader-text">SINCRONIZANDO ONDAS CEREBRALES...</div></div>
+
+  {audioTrack && <audio id="notebookAudio" src={audioTrack} preload="auto"></audio>}
+
+  <aside id="sidebar" class="glass-panel">
+    <div class="brand-header">
+      <h1>{post.data.title}</h1>
+      <p>Modo de Lectura Inmersiva. Orquestado por IA.</p>
+    </div>
+
+    <div class="control-group">
+      <label>Secuencia de Reproducción</label>
+      <div class="playback-controls">
+        <button class="btn" id="btnPlay">▶ Iniciar Viaje</button>
+        <button class="btn" id="btnPause">⏸ Pausar</button>
+        <button class="btn btn-full" id="btnRestart">🔄 Reiniciar Consciencia</button>
+      </div>
+    </div>
+
+    <div class="progress-container">
+      <div id="progressBar" class="progress-fill"></div>
+    </div>
+
+    <div id="status-indicator">
+      <div class="status-dot"></div>
+      <span id="status-text">Sistema Inactivo. Esperando inicio.</span>
+    </div>
+  </aside>
+
+  <main id="main-stage">
+    <div id="visual-wrapper">
+      <div id="container" style={`background-image: url('${post.data.coverImage}')`}>
+        <svg id="svg-lines"></svg>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script id="coreography-data" type="application/json" is:inline set:html={JSON.stringify(coreography)}></script>
+
+<style>
+  /* Aquí va todo tu CSS original del index.html, 
+     adaptado para que viva dentro del scope de este componente Astro.
+     He añadido la barra de progreso: */
+  .progress-container {
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    margin-top: 1rem;
+    border-radius: 2px;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent-main);
+    transition: width 0.1s linear;
+  }
+</style>
+
+<script>
+  import { gsap } from "gsap";
+
+  const container = document.getElementById('container');
+  const loader = document.getElementById('loader');
+  const statusText = document.getElementById('status-text');
+  const audio = document.getElementById('notebookAudio') as HTMLAudioElement;
+  const progressBar = document.getElementById('progressBar');
+
+  const dataScript = document.getElementById('coreography-data');
+  const markersData = dataScript && dataScript.textContent ? JSON.parse(dataScript.textContent) : [];
+
+  let masterTimeline = gsap.timeline({ paused: true });
+
+  if (loader) {
+    gsap.to(loader, { opacity: 0, duration: 1, onComplete: () => loader.style.display = 'none' });
+  }
+
+  // Solución TS: Tipado genérico para la data
+  function buildScene(data: any[]) {
+    if (!container) return;
+
+    data.forEach((m: any) => {
+      // Solución TS: Declaramos los elementos que estábamos animando
+      const group = document.createElement('div');
+      group.className = 'neural-node-group';
+
+      const pulse = document.createElement('div');
+      pulse.className = 'neural-pulse';
+
+      const card = document.createElement('div');
+      card.className = 'neural-card';
+
+      // (Aquí deberías añadir el resto de tu lógica para agregar clases e inyectarlos al 'container'
+      // tal como lo tenías en tu index.html original)
+      container.appendChild(group);
+
+      masterTimeline
+        .to(group, { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.5)" }, m.timeStart)
+        .to(pulse, { opacity: 0.8, scale: 1.5, duration: 0.5 }, m.timeStart + 0.2)
+        .to(card, { opacity: 1, x: 0, duration: 0.5 }, m.timeStart + 0.4);
+
+      const timeEnd = m.timeStart + (m.duration || 5);
+      masterTimeline.to([group, card], { opacity: 0, scale: 0.9, duration: 0.5 }, timeEnd);
+    });
+  }
+
+  buildScene(markersData);
+
+  if (audio) {
+    audio.addEventListener('timeupdate', () => {
+      const progress = (audio.currentTime / audio.duration) * 100;
+      if (progressBar) progressBar.style.width = `${progress}%`;
+      masterTimeline.time(audio.currentTime);
+    });
+
+    audio.addEventListener('play', () => { if (statusText) statusText.innerText = "Sincronía Neuronal Activa..."; });
+    audio.addEventListener('pause', () => { if (statusText) statusText.innerText = "Flujo Pausado."; });
+  }
+
+  document.getElementById('btnPlay')?.addEventListener('click', () => { audio ? audio.play() : masterTimeline.play(); });
+  document.getElementById('btnPause')?.addEventListener('click', () => { audio ? audio.pause() : masterTimeline.pause(); });
+</script>
