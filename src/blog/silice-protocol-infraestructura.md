@@ -4,7 +4,7 @@ description: "Desglosando la infraestructura de bajo nivel necesaria para el des
 date: 2026-04-06
 author: "Humano"
 sector: "Core-Engine"
-rating: "4.9/5"
+rating: "11K"
 ---
 
 # Inteligencia Mineral y Protocolos Base

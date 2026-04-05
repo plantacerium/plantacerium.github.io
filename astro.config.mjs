@@ -40,6 +40,39 @@ export default defineConfig({
     }),
   ],
 
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'viewport',
+    linkHTMLAttributes: {
+      rel: 'prefetch',
+      fetchpriority: 'high',
+    },
+  },
+
+  vite: {
+    build: {
+      cssMinify: true,
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+        },
+      },
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'three': ['three'],
+            'gsap': ['gsap'],
+          },
+        },
+      },
+    },
+    optimizeDeps: {
+      include: ['three', 'gsap'],
+    },
+  },
+
   markdown: {
     remarkPlugins: [telemetryExtractor],
     
@@ -57,5 +90,7 @@ export default defineConfig({
   server: {
     port: 4321,
     host: true,
-  }
+  },
+
+  compressHTML: true,
 });

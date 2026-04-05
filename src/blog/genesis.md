@@ -4,7 +4,7 @@ description: "Inicializando el sistema de bitácoras en el Command Hub."
 date: 2026-04-04
 author: "Humano"
 sector: "Core-Engine"
-rating: "5.0/5"
+rating: "4K"
 ---
 
 # El Despliegue Inicial

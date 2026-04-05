@@ -39,6 +39,10 @@ This document outlines recommended improvements for the Plantacerium template, f
 | 25 | Biofluid Morphing Blob | ✅ Done | Created BiofluidBlob component with CSS morphing animations |
 | 26 | Animated Border Effects | ✅ Done | Created AnimatedBorder component with gradient/glow/shimmer/plasma variants |
 | 27 | Parallax Depth Layers | ✅ Done | Created ParallaxLayer component for mouse + scroll parallax |
+| 28 | Mobile Constellation Background | ✅ Done | SVG-based constellation with randomized nodes, only on mobile |
+| 29 | Hamburger Menu | ✅ Done | Animated hamburger menu with smooth transitions |
+| 30 | Holographic 8K Cards | ✅ Done | Ultra-high-fidelity cards with volumetric shadows and nested 3D |
+| 31 | Astro Optimizations | ✅ Done | Prefetch, code splitting, CSS minification, compression |
 
 ---
 
@@ -257,8 +261,10 @@ getAuthorConfig(author)        // Returns complete config object
 | `src/components/three/BiofluidBlob.astro` | CSS morphing blob animation for hero |
 | `src/components/three/AnimatedBorder.astro` | Animated gradient/glow borders for cards |
 | `src/components/three/ParallaxLayer.astro` | Mouse + scroll parallax depth layers |
+| `src/components/three/ConstellationBackground.astro` | Mobile-only SVG constellation background |
 | `src/lib/search.ts` | Core search utilities and types |
 | `src/styles/search-cards.css` | Shared search card styles |
+| `README.md` | Comprehensive documentation |
 
 ---
 
@@ -357,5 +363,5 @@ The template has been significantly improved with:
 
 ---
 
-*Document Version: 3.0*
-*Last Updated: 2026-04-04*
+*Document Version: 4.0*
+*Last Updated: 2026-04-05*

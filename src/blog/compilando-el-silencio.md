@@ -4,7 +4,7 @@ description: "Por qué la verdadera arquitectura de sistemas a gran escala no co
 date: 2026-04-05
 author: "Humano"
 sector: "Zen-Garden"
-rating: "5.0/5"
+rating: "8K"
 ---
 
 # Compilando el Silencio

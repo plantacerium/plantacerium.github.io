@@ -129,7 +129,7 @@ const posts = (await getCollection('blog')).sort(
                 <div class="node-footer">
                   <span class="execute-cmd">
                     <span class="cmd-prompt">$</span>
-                    execute
+                    <span class="binary-cmd" data-original="execute">execute</span>
                   </span>
                   <div class="line-decorator">
                     <div class="line-glow"></div>
@@ -172,7 +172,7 @@ const posts = (await getCollection('blog')).sort(
                 <div class="node-footer">
                   <span class="execute-cmd">
                     <span class="cmd-prompt">$</span>
-                    init_reading
+                    <span class="binary-cmd" data-original="init_reading">init_reading</span>
                   </span>
                   <div class="line-decorator">
                     <div class="line-glow"></div>
@@ -218,6 +218,37 @@ const posts = (await getCollection('blog')).sort(
 
 <script>
   import gsap from 'gsap';
+
+  function generateBinary(length: number): string {
+    return Array.from({ length }, () => Math.random() > 0.5 ? '1' : '0').join('');
+  }
+
+  function initBinaryCommands() {
+    const binaryCmds = document.querySelectorAll('.binary-cmd');
+    binaryCmds.forEach(cmd => {
+      const original = cmd.getAttribute('data-original') || '';
+      const maxChars = 21;
+      const binaryLength = Math.min(original.length * 2, maxChars);
+      const binary = generateBinary(binaryLength);
+      
+      let currentBinary = binary;
+      let showOriginal = false;
+      
+      const interval = setInterval(() => {
+        if (showOriginal) {
+          cmd.textContent = original;
+          cmd.classList.remove('is-binary');
+        } else {
+          cmd.textContent = currentBinary;
+          cmd.classList.add('is-binary');
+          currentBinary = generateBinary(binaryLength);
+        }
+        showOriginal = !showOriginal;
+      }, 2000 + Math.random() * 3000);
+      
+      cmd.addEventListener('mouseenter', () => clearInterval(interval));
+    });
+  }
 
   document.addEventListener('DOMContentLoaded', () => {
     gsap.fromTo('.gs-reveal',
@@ -275,6 +306,8 @@ const posts = (await getCollection('blog')).sort(
       { opacity: 0, x: -10 },
       { opacity: 1, x: 0, duration: 0.4, stagger: 0.1, delay: 0.6, ease: 'power2.out' }
     );
+    
+    initBinaryCommands();
   });
 </script>
 
@@ -693,6 +726,11 @@ const posts = (await getCollection('blog')).sort(
     transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     position: relative;
     overflow: hidden;
+    
+    /* 3D Holographic Enhancement */
+    transform-style: preserve-3d;
+    perspective: 1200px;
+    transform: perspective(1500px) rotateX(5deg) rotateY(-5deg) translateZ(0);
   }
 
   .card-content::before {
@@ -724,25 +762,53 @@ const posts = (await getCollection('blog')).sort(
     transition: left 0.6s ease;
   }
 
+  .card-content:hover {
+    transform: perspective(1500px) rotateX(0deg) rotateY(0deg) translateZ(40px) scale(1.02);
+  }
+
   .card-content:hover::after {
     left: 150%;
   }
 
   .type-zen:hover { 
     border-color: var(--accent-warm); 
-    box-shadow: 0 15px 40px rgba(212, 163, 115, 0.2);
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.5),
+      0 0 40px rgba(212, 163, 115, 0.3),
+      -10px 10px 30px rgba(212, 163, 115, 0.2),
+      10px -10px 30px rgba(212, 163, 115, 0.2);
   }
   .type-system:hover { 
     border-color: var(--accent-main); 
-    box-shadow: 0 15px 40px rgba(0, 242, 255, 0.2);
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.5),
+      0 0 40px rgba(0, 242, 255, 0.3),
+      -10px 10px 30px rgba(0, 242, 255, 0.2),
+      10px -10px 30px rgba(0, 242, 255, 0.2);
   }
   .type-ui:hover { 
     border-color: var(--accent-secondary); 
-    box-shadow: 0 15px 40px rgba(139, 92, 246, 0.2);
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.5),
+      0 0 40px rgba(139, 92, 246, 0.3),
+      -10px 10px 30px rgba(139, 92, 246, 0.2),
+      10px -10px 30px rgba(139, 92, 246, 0.2);
   }
   .type-blog:hover { 
     border-color: var(--accent-warm); 
-    box-shadow: 0 15px 40px rgba(212, 163, 115, 0.2);
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.5),
+      0 0 40px rgba(212, 163, 115, 0.3),
+      -10px 10px 30px rgba(212, 163, 115, 0.2),
+      10px -10px 30px rgba(212, 163, 115, 0.2);
+  }
+
+  .blog-card:hover .card-content {
+    border-color: var(--accent-main);
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.5),
+      0 0 40px rgba(0, 242, 255, 0.3),
+      inset 0 0 30px rgba(0, 242, 255, 0.1);
   }
 
   .blog-card {
@@ -825,10 +891,28 @@ const posts = (await getCollection('blog')).sort(
     display: flex;
     align-items: center;
     gap: 0.25rem;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .cmd-prompt {
     color: var(--accent-secondary);
+    flex-shrink: 0;
+  }
+
+  .binary-cmd {
+    transition: color 0.3s ease;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+    display: inline-block;
+  }
+
+  .binary-cmd.is-binary {
+    color: var(--accent-secondary);
+    text-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
   }
 
   .line-decorator { 

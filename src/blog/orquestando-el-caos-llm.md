@@ -4,7 +4,7 @@ description: "El diseño de arquitecturas cognitivas para IA a través de Socrat
 date: 2026-04-08
 author: "Híbrido"
 sector: "AI-Matrix"
-rating: "4.8/5"
+rating: "4.8K"
 ---
 
 # La Configuración de la Inteligencia

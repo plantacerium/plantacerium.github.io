@@ -4,7 +4,7 @@ description: "Una reflexión sobre la evolución del template Plantacerium — d
 date: 2026-04-04
 author: Híbrido
 sector: Core-Engine
-rating: "5.0/5"
+rating: "5.5K"
 ---
 
 ## La Genesis del Orden
