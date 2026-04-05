@@ -233,6 +233,6 @@ const authors = {
 - Safari 14+
 - Edge 90+
 
-## Credits
+## Main Technologies
 
 Built with [Astro 6](https://astro.build), [Three.js](https://threejs.org), and [GSAP](https://greensock.com).
