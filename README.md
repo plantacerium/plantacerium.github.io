@@ -236,3 +236,13 @@ const authors = {
 ## Main Technologies
 
 Built with [Astro 6](https://astro.build), [Three.js](https://threejs.org), and [GSAP](https://greensock.com).
+
+## ⚡ Support
+<div align="center">
+
+**Made with ❤️ and ☕ by the Plantacerium**
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/plantacerium)
+
+⭐**Star us on GitHub**⭐
+</div>
