@@ -1,7 +1,5 @@
 # Plantacerium
 
-**A premium Astro 6 template for digital architects and consciousness engineers.**
-
 An immersive, high-performance portfolio and blog template featuring Three.js 3D effects, glassmorphism, biofluid animations, fuzzy search, and a stunning constellation background for mobile devices.
 
 ## Features
