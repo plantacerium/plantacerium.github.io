@@ -30,7 +30,7 @@ jobs:
       - name: Instalar pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 9 # Asegura compatibilidad con tu entorno local
+          version: 11 # Asegura compatibilidad con tu entorno local
 
       - name: Configurar Node.js 24
         uses: actions/setup-node@v4
