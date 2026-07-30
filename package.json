@@ -27,11 +27,5 @@
     "astro-pagefind": "^1.8.6",
     "mdast-util-to-string": "^4.0.0",
     "typescript": "^5.4.0"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "sharp"
-    ]
   }
 }
