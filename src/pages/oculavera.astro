@@ -1,0 +1,469 @@
+---
+import OculaveraCarousel from '../components/OculaveraCarousel.astro';
+
+const images = [
+  '/assets/oculavera/OCULAVERA_1786617778503.jpg',
+  '/assets/oculavera/OCULAVERA_1786618684514.jpg',
+  '/assets/oculavera/OCULAVERA_1786618798054.jpg',
+  '/assets/oculavera/OCULAVERA_1786618854543.jpg',
+  '/assets/oculavera/OCULAVERA_1786619184486.jpg',
+  '/assets/oculavera/OCULAVERA_1786619226305.jpg',
+  '/assets/oculavera/OCULAVERA_1786619254333.jpg',
+  '/assets/oculavera/OCULAVERA_1786619513062.jpg',
+  '/assets/oculavera/OCULAVERA_1786619716058.jpg'
+];
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OculaVera - Premium Camera Experience</title>
+  <meta name="description" content="OculaVera is a premium camera app designed to capture maximum light on the fly with professional depth and precision.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #fbfbfb;
+      --text-color: #1a1a1a;
+      --accent-color: #e0e0e0;
+      --blur-color: rgba(255, 255, 255, 0.8);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Background Bezier & Blurs */
+    .bg-elements {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+      background-color: var(--bg-color);
+      overflow: hidden;
+    }
+
+    .bg-bezier-1 {
+      position: absolute;
+      top: -20%;
+      left: -10%;
+      width: 60vw;
+      height: 60vh;
+      background: radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(245,245,250,0.4) 50%, transparent 100%);
+      filter: blur(80px);
+      border-radius: 50% 40% 60% 40% / 50% 60% 40% 50%;
+      animation: morph 15s ease-in-out infinite alternate;
+      transform: rotate(-15deg);
+    }
+
+    .bg-bezier-2 {
+      position: absolute;
+      bottom: -10%;
+      right: -10%;
+      width: 70vw;
+      height: 70vh;
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(230,235,240,0.3) 50%, transparent 100%);
+      filter: blur(100px);
+      border-radius: 40% 60% 50% 50% / 60% 40% 60% 40%;
+      animation: morph 20s ease-in-out infinite alternate-reverse;
+    }
+    
+    .bg-bezier-3 {
+      position: absolute;
+      top: 40%;
+      left: 20%;
+      width: 40vw;
+      height: 40vh;
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.8) 0%, rgba(240,242,245,0.2) 60%, transparent 100%);
+      filter: blur(60px);
+      border-radius: 50%;
+      animation: pulse 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes morph {
+      0% { border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%; transform: scale(1) rotate(0deg); }
+      100% { border-radius: 60% 40% 30% 70% / 40% 70% 30% 60%; transform: scale(1.1) rotate(10deg); }
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(0.8) translate(0, 0); opacity: 0.5; }
+      100% { transform: scale(1.2) translate(5vw, -5vh); opacity: 0.8; }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    section {
+      padding: 8rem 0;
+    }
+
+    /* Hero */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding-top: 10rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      font-weight: 300;
+      max-width: 600px;
+      color: #666;
+      margin-bottom: 4rem;
+    }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      width: 100%;
+      align-items: center;
+      margin-top: 4rem;
+      margin-bottom: 6rem;
+    }
+
+    .showcase-item {
+      width: 100%;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.08);
+      transform: translateY(0);
+      transition: transform 0.6s ease;
+      background: #000;
+      aspect-ratio: 9/20;
+    }
+
+    .showcase-item:hover {
+      transform: translateY(-10px);
+    }
+
+    .showcase-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .showcase-item iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* Section Titles */
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+
+    /* Capabilities & Modes */
+    .capabilities-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+
+    .modes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      .capabilities-grid, .modes-grid, .showcase-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .capabilities-grid, .modes-grid, .showcase-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .capability-card {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+      transition: transform 0.3s ease;
+    }
+
+    .capability-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .capability-card h3 {
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .capability-card p {
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    /* Privacy Policy */
+    .privacy-section {
+      background: #fff;
+      border-radius: 24px;
+      padding: 4rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .privacy-section h3 {
+      font-size: 1.5rem;
+      font-weight: 400;
+      margin: 2rem 0 1rem;
+    }
+
+    .privacy-section p, .privacy-section ul {
+      color: #555;
+      margin-bottom: 1rem;
+    }
+
+    .privacy-section ul {
+      padding-left: 1.5rem;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 4rem 0;
+      color: #888;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-elements">
+    <div class="bg-bezier-1"></div>
+    <div class="bg-bezier-2"></div>
+    <div class="bg-bezier-3"></div>
+  </div>
+
+  <main>
+    <section class="hero container">
+      <h1>OculaVera</h1>
+      <p>Capture maximum light on the fly with the depth and precision required for professional cinematography and photography.</p>
+      
+      <div class="showcase-grid">
+        <div class="showcase-item">
+          <img src="/assets/oculavera/Screenshot_2026-08-08-12-17-18-65_94c51058a2bab63b2d331338dd6f3110.jpg" alt="OculaVera Interface 1" />
+        </div>
+        <div class="showcase-item">
+          <img src="/assets/oculavera/OCULAVERA_1786624102903.jpg" alt="OculaVera Interface 2" id="hero-lightbox-trigger" style="object-position: 54% center; cursor: zoom-in;" />
+        </div>
+        <div class="showcase-item">
+          <iframe src="https://www.youtube.com/embed/5Jkz5rQ3sXk" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="capabilities container">
+      <h2>Ready to Go</h2>
+      <div class="capabilities-grid">
+        <div class="capability-card">
+          <h3>Point and Shoot (Automatic)</h3>
+          <p>The moment you open the app, Auto Exposure and Auto Focus systems are instantly engaged to capture perfect light and sharpness right out of the box.</p>
+        </div>
+        <div class="capability-card">
+          <h3>Front-Facing Brilliance</h3>
+          <p>Seamlessly flip to the selfie camera with a single tap. Enjoy the same auto mode for striking, high-fidelity self-portraits and vlogs.</p>
+        </div>
+        <div class="capability-card">
+          <h3>Zero-Friction Photo to Video</h3>
+          <p>Intuitive switching between photo and video modes. Tap the "Create" button to instantly capture high-quality motion.</p>
+        </div>
+        <div class="capability-card">
+          <h3>Intelligent Framing (Auto-Swap)</h3>
+          <p>The interface seamlessly adapts to your device's physical rotation. Aspect ratios and menus automatically rotate with you.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="gallery-section">
+      <h2>Gallery</h2>
+      <OculaveraCarousel images={images} />
+    </section>
+
+    <section class="capabilities container">
+      <h2>Modes</h2>
+      <div class="modes-grid">
+        <div class="capability-card">
+          <h3>Absolute Sensor Fidelity (RAW DNG)</h3>
+          <p>Direct access to raw 16-bit sensor data via DNG files, pure optical reproduction.</p>
+        </div>
+        <div class="capability-card">
+          <h3>OMAX (Super HDR)</h3>
+          <p>Fuses up to 20 captures to generate dramatically detailed photographs.</p>
+        </div>
+        <div class="capability-card">
+          <h3>IRIS (Extreme Dynamic Range)</h3>
+          <p>Computational engine that merges up to 9 captures of variable exposure to generate photographs with extreme dynamic range.</p>
+        </div>
+        <div class="capability-card">
+          <h3>STAR (Super Resolution)</h3>
+          <p>Captures a burst of 9 photos combined using powerful super-resolution algorithms to scale (x2) the real pixels into a massive 8K image.</p>
+        </div>
+        <div class="capability-card">
+          <h3>CINE Mode</h3>
+          <p>Tailored for filmmakers, this mode activates a specialized color matrix and cinematic processing pipeline.</p>
+        </div>
+        <div class="capability-card">
+          <h3>Total Manual Control</h3>
+          <p>A cinematic HUD grants millimeter-precise tactile control over Shutter Speed, ISO, and manual Focus Lens Distance.</p>
+        </div>
+      </div>
+    </section>
+
+
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Plantacerium. All rights reserved. | <a href="/oculavera-privacy" style="color: inherit; text-decoration: underline;">Privacy Policy</a></p>
+  </footer>
+
+  <div class="hero-lightbox" id="hero-lightbox">
+    <div class="hero-lightbox-backdrop" id="hero-lightbox-close"></div>
+    <img src="/assets/oculavera/OCULAVERA_1786624102903.jpg" alt="Full view" />
+    <button class="hero-lightbox-close-btn" id="hero-lightbox-close-btn" aria-label="Close">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <style>
+    .hero-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .hero-lightbox.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .hero-lightbox-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      cursor: zoom-out;
+    }
+    .hero-lightbox img {
+      position: relative;
+      z-index: 2;
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      transform: scale(0.95);
+      transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .hero-lightbox.active img {
+      transform: scale(1);
+    }
+    .hero-lightbox-close-btn {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      z-index: 3;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0,0,0,0.05);
+      color: #1a1a1a;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    .hero-lightbox-close-btn:hover {
+      background: #fff;
+      transform: scale(1.1);
+    }
+  </style>
+
+  <script>
+    function setupHeroLightbox() {
+      const trigger = document.getElementById('hero-lightbox-trigger');
+      const lightbox = document.getElementById('hero-lightbox');
+      const backdrop = document.getElementById('hero-lightbox-close');
+      const closeBtn = document.getElementById('hero-lightbox-close-btn');
+
+      if (!trigger || !lightbox) return;
+
+      const openLightbox = () => {
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      };
+
+      const closeLightbox = () => {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+      };
+
+      trigger.addEventListener('click', openLightbox);
+      backdrop.addEventListener('click', closeLightbox);
+      closeBtn.addEventListener('click', closeLightbox);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+          closeLightbox();
+        }
+      });
+    }
+    document.addEventListener('DOMContentLoaded', setupHeroLightbox);
+    document.addEventListener('astro:page-load', setupHeroLightbox);
+  </script>
+</body>
+</html>
