@@ -150,6 +150,7 @@
                 mermaid.initialize({
                     startOnLoad: false,
                     maxTextSize: 500000, // Bypass size limit (default is 50000)
+                    // @ts-ignore - textMathSupport might not be in MermaidConfig types
                     textMathSupport: true,
                     theme: 'dark',
                     flowchart: {
@@ -170,14 +171,15 @@
                 statusEl.textContent = 'Rendering math...';
 
                 function renderMath() {
-                    if (window.MathJax && window.MathJax.typesetPromise) {
-                        window.MathJax.typesetPromise([container]).then(() => {
+                    const win = window as any;
+                    if (win.MathJax && win.MathJax.typesetPromise) {
+                        win.MathJax.typesetPromise([container]).then(() => {
                             isReady = true;
                             statusEl.className = 'ready';
                             const svgEl = container.querySelector('svg');
                             if (svgEl) {
-                                const w = Math.round(parseFloat(svgEl.getAttribute('width') || 4000));
-                                const h = Math.round(parseFloat(svgEl.getAttribute('height') || 2000));
+                                const w = Math.round(parseFloat(svgEl.getAttribute('width') || '4000'));
+                                const h = Math.round(parseFloat(svgEl.getAttribute('height') || '2000'));
                                 statusEl.textContent = 'Ready | ' + w + ' x ' + h + ' px | Zoom: ' + Math.round(currentZoom * 100) + '%';
                             }
                             fitToScreen();
@@ -245,8 +247,8 @@
         function fitToScreen() {
             const svg = container.querySelector('svg');
             if (!svg) return;
-            const svgWidth = parseFloat(svg.getAttribute('width') || 4000);
-            const svgHeight = parseFloat(svg.getAttribute('height') || 2000);
+            const svgWidth = parseFloat(svg.getAttribute('width') || '4000');
+            const svgHeight = parseFloat(svg.getAttribute('height') || '2000');
             const vpWidth = viewport.clientWidth - 40;
             const vpHeight = viewport.clientHeight - 40;
             
