@@ -1,0 +1,310 @@
+---
+// QuantumMeditationBoard.astro
+// Este componente contiene la pizarra interactiva completa.
+// Como usa posicionamiento 'fixed', se recomienda renderizarlo en una pagina vacia o sin layout.
+---
+
+{/* MathJax dependencies and Global Styles */}
+
+    <!-- <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Meditation III â€” The Cosmic Completion</title> -->
+    <style is:global>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 0;
+            background: #0a0a0f;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+        #header {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid #333;
+        }
+        #header h1 { margin: 0; font-size: 16px; color: #e94560; }
+        #header .subtitle { font-size: 11px; color: #8d99ae; margin-left: 10px; }
+        #controls { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+        #controls button {
+            background: #e94560; color: white; border: none;
+            padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;
+        }
+        #controls button:hover { background: #ff6b6b; }
+        #controls button:disabled { background: #555; cursor: not-allowed; }
+        #controls button.active { background: #52b788; }
+        #part-nav { display: flex; gap: 5px; }
+        #part-nav button { background: #16213e; border: 1px solid #0f3460; }
+        #part-nav button.active { background: #52b788; border-color: #52b788; }
+        #viewport {
+            position: fixed; top: 55px; left: 0; right: 0; bottom: 30px;
+            overflow: hidden; padding: 20px; cursor: grab;
+        }
+        #diagram-container { transform-origin: top left; }
+        #status {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(10, 10, 15, 0.95);
+            padding: 5px 20px; font-size: 11px; color: #8d99ae;
+            border-top: 1px solid #333;
+        }
+        #status.loading { color: #e94560; }
+        #status.ready { color: #52b788; }
+        #status.error { color: #ff4444; }
+        #diagram-container svg .cluster rect { fill: transparent !important; stroke: rgba(233,69,96,0.3) !important; stroke-width: 1px !important; stroke-dasharray: 4; }
+        #diagram-container svg .cluster-rect { fill: transparent !important; stroke: rgba(233,69,96,0.3) !important; stroke-width: 1px !important; stroke-dasharray: 4; }
+        #diagram-container svg .cluster span, #diagram-container svg .cluster .nodeLabel { 
+            color: #ff6b6b !important; 
+            font-weight: bold !important; 
+            font-size: 12px !important; 
+            white-space: nowrap !important; 
+            overflow: visible !important;
+        }
+        #error-box {
+            display: none; position: fixed; top: 60px; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(74, 10, 10, 0.9); color: #ff6b6b;
+            backdrop-filter: blur(5px);
+            padding: 15px 25px; border-radius: 8px;
+            border: 1px solid #ff4444; max-width: 80%; z-index: 200;
+            font-family: monospace; font-size: 12px; max-height: 300px; overflow: auto;
+        }
+        .loading { color: #e94560; text-align: center; font-size: 18px; padding: 50px; font-weight: 300; letter-spacing: 1px; }
+    </style>
+
+    <!-- MathJax 3 -->
+    <script is:inline>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+            svg: { fontCache: 'global' },
+            startup: {
+                ready: () => {
+                    MathJax.startup.defaultReady();
+                    if (window.onMathJaxReady) window.onMathJaxReady();
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+
+
+{/* Board UI and Logic */}
+
+    <div id="header">
+        <div style="display:flex;align-items:center;">
+            <h1>Quantum Meditation</h1>
+            <span class="subtitle">IV</span>
+        </div>
+        <div id="controls">
+            <button id="btn-zoom-in">+ Zoom</button>
+            <button id="btn-zoom-out">- Zoom</button>
+            <button id="btn-reset">Reset</button>
+            <button id="btn-fit">Fit</button>
+        </div>
+    </div>
+    <div id="viewport">
+        <div id="diagram-container">
+            <div class="loading">Select a part to view...</div>
+        </div>
+    </div>
+    <div id="status" class="loading">Ready</div>
+    <div id="error-box"></div>
+    
+    <script>
+        import mermaid from 'mermaid';
+
+        let currentZoom = 1;
+        let translateX = 0;
+        let translateY = 0;
+        let isReady = false;
+        const viewport = document.getElementById('viewport');
+        const container = document.getElementById('diagram-container');
+        const statusEl = document.getElementById('status');
+        const errorBox = document.getElementById('error-box');
+
+        function showError(msg) {
+            errorBox.style.display = 'block';
+            errorBox.textContent = msg;
+            statusEl.className = 'error';
+            statusEl.textContent = 'Error rendering diagram';
+        }
+
+        async function loadDiagram() {
+            statusEl.className = 'loading';
+            statusEl.textContent = 'Loading diagram...';
+            container.innerHTML = '<div class="loading">Fetching quantum structures...</div>';
+            
+            try {
+                const response = await fetch('/assets/quantum-meditation-diagram-math.mmd');
+                if (!response.ok) throw new Error('Could not load diagram from /assets/');
+                const mmd = await response.text();
+
+                statusEl.textContent = 'Rendering diagram (this may take 15-30 seconds)...';
+
+                mermaid.initialize({
+                    startOnLoad: false,
+                    maxTextSize: 500000, // Bypass size limit (default is 50000)
+                    textMathSupport: true,
+                    theme: 'dark',
+                    flowchart: {
+                        useMaxWidth: false,
+                        htmlLabels: true,
+                        curve: 'basis',
+                        nodeSpacing: 40,
+                        rankSpacing: 60,
+                        padding: 15
+                    },
+                    securityLevel: 'loose',
+                    logLevel: 'error'
+                });
+
+                const { svg } = await mermaid.render('graph1', mmd);
+                container.innerHTML = svg;
+
+                statusEl.textContent = 'Rendering math...';
+
+                function renderMath() {
+                    if (window.MathJax && window.MathJax.typesetPromise) {
+                        window.MathJax.typesetPromise([container]).then(() => {
+                            isReady = true;
+                            statusEl.className = 'ready';
+                            const svgEl = container.querySelector('svg');
+                            if (svgEl) {
+                                const w = Math.round(parseFloat(svgEl.getAttribute('width') || 4000));
+                                const h = Math.round(parseFloat(svgEl.getAttribute('height') || 2000));
+                                statusEl.textContent = 'Ready | ' + w + ' x ' + h + ' px | Zoom: ' + Math.round(currentZoom * 100) + '%';
+                            }
+                            fitToScreen();
+                        }).catch(err => {
+                            console.error('MathJax error:', err);
+                            isReady = true;
+                            statusEl.className = 'ready';
+                            fitToScreen();
+                        });
+                    } else {
+                        setTimeout(renderMath, 500);
+                    }
+                }
+                renderMath();
+
+            } catch (err) {
+                showError(err.message);
+                container.innerHTML = '<div class="loading">Failed to render.<br>Error: ' + err.message + '</div>';
+            }
+        }
+
+        function updateTransform() {
+            container.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
+        }
+
+        // --- NEW: Figma-style Zoom to Cursor ---
+        function zoomToCursor(zoomFactor, cursorX, cursorY) {
+            const rect = viewport.getBoundingClientRect();
+            // Mouse position relative to viewport
+            const px = cursorX - rect.left;
+            const py = cursorY - rect.top;
+
+            // Point on the unscaled/untranslated diagram
+            const diagramX = (px - translateX) / currentZoom;
+            const diagramY = (py - translateY) / currentZoom;
+
+            // Apply new zoom (clamp between 5% and 500%)
+            let newZoom = currentZoom * zoomFactor;
+            if (newZoom < 0.05) newZoom = 0.05;
+            if (newZoom > 5) newZoom = 5;
+            
+            // Adjust translation to keep the diagram point under the mouse
+            translateX = px - diagramX * newZoom;
+            translateY = py - diagramY * newZoom;
+            currentZoom = newZoom;
+
+            updateTransform();
+            updateStatus();
+        }
+
+        // Fallback for button zooms (zooms to center of screen)
+        function zoomIn() { 
+            const rect = viewport.getBoundingClientRect();
+            zoomToCursor(1.25, rect.left + rect.width / 2, rect.top + rect.height / 2);
+        }
+        function zoomOut() { 
+            const rect = viewport.getBoundingClientRect();
+            zoomToCursor(0.8, rect.left + rect.width / 2, rect.top + rect.height / 2);
+        }
+        function resetZoom() { 
+            currentZoom = 1; translateX = 0; translateY = 0; 
+            updateTransform(); updateStatus(); 
+        }
+
+        function fitToScreen() {
+            const svg = container.querySelector('svg');
+            if (!svg) return;
+            const svgWidth = parseFloat(svg.getAttribute('width') || 4000);
+            const svgHeight = parseFloat(svg.getAttribute('height') || 2000);
+            const vpWidth = viewport.clientWidth - 40;
+            const vpHeight = viewport.clientHeight - 40;
+            
+            const zoomX = vpWidth / svgWidth;
+            const zoomY = vpHeight / svgHeight;
+            currentZoom = Math.min(zoomX, zoomY); // Ajustar tanto en width como height
+            
+            // Centrar el diagrama
+            translateX = (vpWidth - svgWidth * currentZoom) / 2;
+            translateY = (vpHeight - svgHeight * currentZoom) / 2;
+
+            updateTransform();
+            updateStatus();
+        }
+
+        function updateStatus() {
+            if (isReady) statusEl.textContent = 'Ready | Zoom: ' + Math.round(currentZoom * 100) + '%';
+        }
+
+        // Panning (Arrastrar)
+        let isDragging = false;
+        let startX, startY;
+
+        viewport.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
+            viewport.style.cursor = 'grabbing';
+        });
+
+        viewport.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            updateTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            viewport.style.cursor = 'grab';
+        });
+
+        // Zoom to cursor with mouse wheel (like Figma/Miro)
+        viewport.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            // If shift is held, we could pan horizontally, but zooming is priority
+            const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+            zoomToCursor(zoomFactor, e.clientX, e.clientY);
+        }, { passive: false });
+
+        // Connect button events natively for Astro
+        document.getElementById('btn-zoom-in').addEventListener('click', zoomIn);
+        document.getElementById('btn-zoom-out').addEventListener('click', zoomOut);
+        document.getElementById('btn-reset').addEventListener('click', resetZoom);
+        document.getElementById('btn-fit').addEventListener('click', fitToScreen);
+
+        // Load diagram on startup
+        loadDiagram();
+    </script>
+
+
