@@ -1,0 +1,793 @@
+---
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Octochron: The Radiant Weaver | 3D Experience</title>
+  <meta name="description" content="Octochron: The Radiant Weaver - An orbital arcade action and cinematic rail shooter proof of concept.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #020204;
+      --bg-card: rgba(15, 15, 20, 0.4);
+      --text-light: #f4f4f5;
+      --text-muted: #8a8a99;
+      --neon-cyan: #00f0ff;
+      --neon-magenta: #ff00ff;
+      --neon-purple: #b026ff;
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-glow: rgba(0, 240, 255, 0.15);
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      overflow-x: hidden;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      /* Prevent jarring native scroll resets during 3D */
+      overscroll-behavior-y: none;
+    }
+
+    h1, h2, h3, h4, .font-display {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* Cosmic Background & Parallax */
+    .cosmic-layer {
+      position: fixed;
+      top: -5%;
+      left: -5%;
+      width: 110vw;
+      height: 110vh;
+      z-index: -2;
+      pointer-events: none;
+      will-change: transform;
+      /* Base scale to allow zooming in without showing edges */
+      transform: scale(1);
+    }
+
+    .bg-base {
+      background: radial-gradient(circle at 50% 50%, #0a0914 0%, var(--bg-dark) 100%);
+      position: absolute;
+      inset: 0;
+    }
+
+    .stars {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 90px 40px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 160px 120px, #a1a1aa, rgba(0,0,0,0));
+      background-repeat: repeat;
+      background-size: 250px 250px;
+      opacity: 0.4;
+      will-change: transform;
+    }
+
+    .nebula {
+      position: absolute;
+      inset: -50%;
+      background: 
+        radial-gradient(circle at 30% 40%, rgba(0, 240, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 70% 60%, rgba(176, 38, 255, 0.08) 0%, transparent 40%);
+      filter: blur(80px);
+      will-change: transform, opacity;
+    }
+
+    /* Virtual Scroll Space */
+    #scroll-spacer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1px;
+      /* Height set via JS */
+      z-index: -10;
+    }
+
+    /* Fixed Viewport for 3D Scenes */
+    #viewport-3d {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      overflow: hidden;
+      perspective: 1000px;
+      z-index: 1;
+    }
+
+    .scene {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transform: scale(0.5); /* Starting far away */
+      will-change: transform, opacity;
+      padding: 2rem;
+      /* By default inactive */
+      pointer-events: none;
+    }
+
+    .scene-content {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Typography & Utilities */
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: var(--neon-cyan);
+      border-radius: 50px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-badge::before {
+      content: '';
+      display: block;
+      width: 8px;
+      height: 8px;
+      background: var(--neon-cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--neon-cyan);
+      animation: blink 2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      margin-bottom: 1rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      color: var(--neon-cyan);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+
+    .text-center { text-align: center; }
+    
+    /* Layout Grids */
+    .grid-2-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    @media (max-width: 968px) {
+      .grid-2-col {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+    }
+
+    /* Glass Cards */
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 3rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at top right, rgba(0,240,255,0.1), transparent 50%);
+      pointer-events: none;
+    }
+
+    /* Media Containers */
+    .media-container {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+      position: relative;
+      background: #000;
+      cursor: zoom-in;
+    }
+
+    .media-container::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+      pointer-events: none;
+    }
+
+    .media-container img, .media-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .media-label {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+      padding: 0.6rem 1.2rem;
+      border-radius: 50px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    @media (max-width: 968px) {
+      .tech-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .tech-grid { grid-template-columns: 1fr; }
+    }
+    
+    .tech-icon {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Lightbox Styles */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s var(--ease-out-expo);
+    }
+
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(2, 2, 4, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      cursor: zoom-out;
+    }
+
+    .lightbox-content {
+      position: relative;
+      z-index: 2;
+      max-width: 90vw;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .lightbox img, .lightbox video {
+      max-width: 100%;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+      transform: scale(0.95);
+      transition: transform 0.5s var(--ease-out-expo);
+    }
+
+    .lightbox.active img, .lightbox.active video {
+      transform: scale(1);
+    }
+    
+    .lightbox-caption {
+      margin-top: 1.5rem;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--neon-cyan);
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      z-index: 3;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .lightbox-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+    
+    /* Scroll Instruction */
+    .scroll-instruction {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      z-index: 9000;
+      opacity: 0.8;
+      pointer-events: none;
+    }
+    .scroll-instruction svg {
+      animation: pulse-scroll 2s infinite;
+    }
+    @keyframes pulse-scroll {
+      0%, 100% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(10px); opacity: 0.3; }
+    }
+
+    noscript .scene {
+      position: relative !important;
+      opacity: 1 !important;
+      transform: scale(1) !important;
+      pointer-events: auto !important;
+      margin-bottom: 4rem;
+    }
+
+    /* BGM Toggle */
+    .bgm-toggle {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--glass-border);
+      color: var(--neon-cyan);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s var(--ease-out-expo);
+    }
+    .bgm-toggle:hover {
+      background: rgba(0, 240, 255, 0.1);
+      transform: scale(1.1);
+    }
+    .bgm-toggle.muted svg {
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="cosmic-layer" id="parallax-bg">
+    <div class="bg-base"></div>
+    <div class="nebula" id="parallax-nebula"></div>
+    <div class="stars" id="parallax-stars"></div>
+  </div>
+
+  <div id="scroll-spacer"></div>
+
+  <div class="scroll-instruction" id="scroll-indicator">
+    Scroll to Enter
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 13 12 18 17 13"></polyline><polyline points="7 6 12 11 17 6"></polyline></svg>
+  </div>
+
+  <audio id="bgm-audio" loop preload="auto">
+    <source src="/assets/Octochron/octochron_bgm.mp3" type="audio/mp3">
+  </audio>
+  
+  <button id="bgm-toggle" class="bgm-toggle muted" aria-label="Toggle Background Music">
+    <!-- SVG injected via JS -->
+  </button>
+
+  <main id="viewport-3d">
+    
+    <!-- Scene 0: Title -->
+    <section class="scene">
+      <div class="scene-content text-center">
+        <div class="hero-badge">3D Experience Live</div>
+        <h1 style="font-size: clamp(3.5rem, 8vw, 7rem); font-weight: 700; letter-spacing: -0.04em; line-height: 1; margin-bottom: 1.5rem; text-transform: uppercase; background: linear-gradient(180deg, #ffffff 0%, #8a8a99 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">
+          Octochron
+        </h1>
+        <span class="section-subtitle" style="color: var(--neon-purple); font-size: clamp(1rem, 2vw, 1.5rem); letter-spacing: 6px;">The Radiant Weaver</span>
+        <p style="font-size: 1.25rem; color: var(--text-muted); max-width: 650px; margin: 0 auto; font-weight: 300;">
+          An orbital arcade action and cinematic rail-shooter. Scroll down to fly forward.
+        </p>
+      </div>
+    </section>
+
+    <!-- Scene 1: Hero Video Showcase -->
+    <section class="scene">
+      <div class="scene-content">
+        <div class="media-container" style="aspect-ratio: 16/9; box-shadow: 0 0 50px rgba(0, 240, 255, 0.3), 0 30px 60px rgba(0,0,0,0.8); border: 1px solid rgba(0, 240, 255, 0.5);" data-lightbox="true" data-isVideo="true" data-caption="Geodesic Flight & Prism Projectiles">
+          <video id="hero-video" loop muted playsinline style="width: 100%; height: 100%;">
+            <source src="/assets/Octochron/Avatar_flying_and_shooting_prisms_202608161415_1080.mp4" type="video/mp4">
+          </video>
+          <div class="media-label" style="font-size: 1rem; padding: 1rem 2rem; background: rgba(0, 240, 255, 0.1); border-color: var(--neon-cyan);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            Live Gameplay Concept
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 2: Core Mechanics -->
+    <section class="scene">
+      <div class="scene-content">
+        <div class="text-center" style="margin-bottom: 4rem;">
+          <span class="section-subtitle">Gameplay Loop</span>
+          <h2 class="section-title">Hybrid Cinematic Combat</h2>
+        </div>
+        <div class="tech-grid">
+          <div class="glass-card" style="padding: 2rem;">
+            <div class="tech-icon">🚀</div>
+            <h3 style="font-size: 1.2rem; color: #fff; margin-bottom: 0.5rem;">Geodesic Flight (Mode 1)</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">High-speed cinematic on-rails traversal. Dodge asteroids with responsive barrel rolls, manipulate your inertia, and engage in continuous vector combat while hurtling through orbital paths.</p>
+          </div>
+          <div class="glass-card" style="padding: 2rem;">
+            <div class="tech-icon">⚓</div>
+            <h3 style="font-size: 1.2rem; color: #fff; margin-bottom: 0.5rem;">Tactical Anchoring (Mode 2)</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Seamlessly decouple from flight to magnetically anchor onto planetary megastructures. Use your lower arms for stability while the upper arms spin 360° to scan, extract relics, and defend.</p>
+          </div>
+          <div class="glass-card" style="padding: 2rem;">
+            <div class="tech-icon">⚛️</div>
+            <h3 style="font-size: 1.2rem; color: #fff; margin-bottom: 0.5rem;">8-Arm Mudras</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">A biomechanical avatar sporting 8 modular arms. Map different abilities to each limb. Converge multiple arms into 'Mudras' to charge devastating attacks like the massive Quantum Beam.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 3: Engine Dev -->
+    <section class="scene">
+      <div class="scene-content">
+        <div class="grid-2-col">
+          <div>
+            <span class="section-subtitle">Day 1 Development</span>
+            <h2 class="section-title">Engine Initialization</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1.1rem;">
+              The foundation is set on Forward+ rendering with Jolt Physics. The <code>GameModeFSM</code> handles seamless transitions between high-velocity orbital runs and anchored combat on planetary megastructures.
+            </p>
+            <div class="glass-card" style="padding: 1.5rem; margin-top: 2rem;">
+              <h3 style="font-size: 1rem; color: var(--neon-magenta); margin-bottom: 0.5rem; letter-spacing: 1px; text-transform: uppercase;">Active Systems</h3>
+              <ul style="list-style: none; color: var(--text-light); font-size: 0.95rem;">
+                <li style="margin-bottom: 0.5rem;"><span style="color: var(--neon-cyan)">▹</span> Procedural Humanoid Avatar base</li>
+                <li style="margin-bottom: 0.5rem;"><span style="color: var(--neon-cyan)">▹</span> Quantum Glass shaders initialized</li>
+                <li style="margin-bottom: 0.5rem;"><span style="color: var(--neon-cyan)">▹</span> Eight-Arm Tensegrity System architecture</li>
+              </ul>
+            </div>
+          </div>
+          <figure class="media-container" style="aspect-ratio: 16/9; margin: 0;" data-lightbox="true" data-caption="Engine Screenshot - Day 1">
+            <img src="/assets/Octochron/Development-Octochron_iter_1.JPG" alt="Octochron Development Iteration 1" loading="lazy" />
+            <figcaption class="media-label">
+              Iteration 1
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 5: Philosophy Image 1 -->
+    <section class="scene">
+      <div class="scene-content">
+        <div class="text-center" style="margin-bottom: 3rem;">
+          <span class="section-subtitle" style="color: var(--neon-purple);">Our Philosophy</span>
+          <h2 class="section-title">Immersive Story. Visceral Gameplay.</h2>
+          <p style="color: var(--text-muted); font-size: 1.15rem; line-height: 1.8; max-width: 800px; margin: 0 auto;">
+            We don't just build mechanics; we weave a cosmic tapestry. Feel the adrenaline of hurtling through the stratosphere of forgotten planets.
+          </p>
+        </div>
+        <figure class="media-container" style="aspect-ratio: 21/9; max-width: 1200px; margin: 0 auto; box-shadow: 0 30px 60px rgba(176, 38, 255, 0.15);" data-lightbox="true" data-caption="Lose yourself in the vastness of deep space.">
+          <img src="/assets/Octochron/Avatar_flying_through_deep_space_202608161404.jpeg" alt="Octochron gameplay: An immersive view of the cyber-mystical avatar flying through deep space with atmospheric scattering and auroras." loading="lazy" />
+          <figcaption class="media-label" style="border-color: var(--neon-purple); background: rgba(176, 38, 255, 0.15); font-size: 1rem; padding: 1rem 2rem;">
+            <span style="color: var(--neon-purple); margin-right: 8px;" aria-hidden="true">✦</span> A Cosmic Journey
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Scene 6: Philosophy Image 2 & Footer -->
+    <section class="scene">
+      <div class="scene-content">
+        <p style="color: var(--text-muted); font-size: 1.15rem; line-height: 1.8; text-align: center; max-width: 800px; margin: 0 auto 3rem auto;">
+          Experience the raw tension of engaging massive celestial structures. Every frame, every pulse of energy is designed to pull you deeper into the universe of the Radiant Weaver.
+        </p>
+        <figure class="media-container" style="aspect-ratio: 21/9; max-width: 1200px; margin: 0 auto 4rem auto; box-shadow: 0 30px 60px rgba(0, 240, 255, 0.15);" data-lightbox="true" data-caption="Feel every impact with our biomechanical tensegrity combat.">
+          <img src="/assets/Octochron/Avatar_aiming_biomechanical_arms_202608161407.jpeg" alt="Octochron gameplay: The avatar aiming its biomechanical tensegrity arms to cast a Mudra in a visceral combat scenario." loading="lazy" />
+          <figcaption class="media-label" style="border-color: var(--neon-cyan); background: rgba(0, 240, 255, 0.15); font-size: 1rem; padding: 1rem 2rem;">
+            <span style="color: var(--neon-cyan); margin-right: 8px;" aria-hidden="true">✦</span> Visceral Action
+          </figcaption>
+        </figure>
+        <footer style="text-align: center; padding-top: 2rem; border-top: 1px solid var(--glass-border); color: var(--text-muted); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; letter-spacing: 1px;">
+          OCTOCHRON: THE RADIANT WEAVER - PROOF OF CONCEPT 3D &copy; 2026
+        </footer>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Lightbox Modal -->
+  <div class="lightbox" id="media-lightbox">
+    <div class="lightbox-backdrop" id="lightbox-close-bg"></div>
+    <div class="lightbox-content">
+      <div id="lightbox-media-container"></div>
+      <div class="lightbox-caption" id="lightbox-caption"></div>
+    </div>
+    <button class="lightbox-close" id="lightbox-close-btn" aria-label="Close">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Core Elements
+      const scenes = document.querySelectorAll('.scene');
+      const numScenes = scenes.length;
+      const scrollSpacer = document.getElementById('scroll-spacer');
+      const parallaxStars = document.getElementById('parallax-stars');
+      const parallaxNebula = document.getElementById('parallax-nebula');
+      const scrollIndicator = document.getElementById('scroll-indicator');
+      const heroVideo = document.getElementById('hero-video');
+      
+      // 2. Audio Engine Setup
+      const bgmAudio = document.getElementById('bgm-audio');
+      const bgmToggle = document.getElementById('bgm-toggle');
+      let isPlaying = false; // Tracks if user globally allowed/wants audio
+
+      const iconUnmuted = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
+      const iconMuted = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`;
+      
+      bgmToggle.innerHTML = iconMuted;
+      bgmAudio.volume = 0.3;
+
+      const toggleAudio = () => {
+        if (isPlaying) {
+          bgmAudio.pause();
+          bgmToggle.innerHTML = iconMuted;
+          bgmToggle.classList.add('muted');
+          if (heroVideo) heroVideo.muted = true;
+        } else {
+          bgmToggle.innerHTML = iconUnmuted;
+          bgmToggle.classList.remove('muted');
+          if (heroVideo && !heroVideo.paused) heroVideo.muted = false;
+        }
+        isPlaying = !isPlaying;
+      };
+
+      bgmToggle.addEventListener('click', toggleAudio);
+
+      // Attempt to auto-start music on first interaction
+      const startAudio = () => {
+        if (!isPlaying) {
+          isPlaying = true;
+          bgmToggle.innerHTML = iconUnmuted;
+          bgmToggle.classList.remove('muted');
+          // Actual playing is triggered by the scroll loop depending on which scene we are in
+        }
+        window.removeEventListener('scroll', startAudio);
+        window.removeEventListener('click', startAudio);
+      };
+      
+      window.addEventListener('scroll', startAudio, { once: true, passive: true });
+      window.addEventListener('click', startAudio, { once: true, passive: true });
+
+      // 3. Z-Axis Scroll Engine
+      const sceneScrollDistance = window.innerHeight * 1.5;
+      scrollSpacer.style.height = `${(numScenes) * sceneScrollDistance}px`;
+
+      let currentScrollY = 0;
+      let targetScrollY = 0;
+      let inVideoScene = false;
+
+      function lerp(start, end, factor) {
+        return start + (end - start) * factor;
+      }
+
+      function update3DScroll() {
+        currentScrollY = lerp(currentScrollY, targetScrollY, 0.1);
+        
+        if (currentScrollY > 100) {
+          scrollIndicator.style.opacity = '0';
+        } else {
+          scrollIndicator.style.opacity = '0.8';
+        }
+
+        const bgZoom = 1 + (currentScrollY * 0.0002);
+        parallaxStars.style.transform = `scale(${bgZoom}) rotate(${currentScrollY * 0.005}deg)`;
+        parallaxNebula.style.transform = `scale(${bgZoom + 0.1}) rotate(${currentScrollY * 0.002}deg)`;
+
+        scenes.forEach((scene, index) => {
+          const sceneStart = index * sceneScrollDistance;
+          const progress = (currentScrollY - sceneStart) / sceneScrollDistance;
+
+          let scale = 1;
+          let opacity = 0;
+          let activeEvents = false;
+
+          if (progress > -1.5 && progress < 1) {
+            if (progress < 0) {
+              opacity = 1 - Math.abs(progress);
+              scale = 1 + (progress * 0.5);
+            } else {
+              opacity = 1 - Math.pow(progress, 3);
+              scale = 1 + (progress * 2.5);
+            }
+
+            if (progress > -0.3 && progress < 0.3) {
+              activeEvents = true;
+            }
+          }
+
+          scene.style.opacity = Math.max(0, Math.min(1, opacity));
+          scene.style.transform = `scale(${Math.max(0, scale)})`;
+          scene.style.pointerEvents = activeEvents ? 'auto' : 'none';
+
+          // Scene 1: Video Audio Routing Logic
+          if (index === 1 && heroVideo) {
+            if (activeEvents && !inVideoScene) {
+              inVideoScene = true;
+              if (isPlaying) {
+                bgmAudio.pause();
+                heroVideo.muted = false;
+              } else {
+                heroVideo.muted = true;
+              }
+              heroVideo.play().catch(e => {});
+            } else if (!activeEvents && inVideoScene) {
+              inVideoScene = false;
+              heroVideo.pause();
+            }
+          }
+        });
+        
+        // Safety checks for Audio routing
+        if (isPlaying) {
+          if (!inVideoScene && bgmAudio.paused) {
+            bgmAudio.play().catch(e => {});
+          }
+        } else {
+          if (!bgmAudio.paused) {
+            bgmAudio.pause();
+          }
+        }
+
+        requestAnimationFrame(update3DScroll);
+      }
+
+      window.addEventListener('scroll', () => {
+        targetScrollY = window.scrollY;
+      }, { passive: true });
+
+      update3DScroll();
+
+      // 4. Lightbox Functionality
+      const lightbox = document.getElementById('media-lightbox');
+      const lightboxMediaContainer = document.getElementById('lightbox-media-container');
+      const lightboxCaption = document.getElementById('lightbox-caption');
+      const closeBg = document.getElementById('lightbox-close-bg');
+      const closeBtn = document.getElementById('lightbox-close-btn');
+      const mediaTriggers = document.querySelectorAll('.media-container[data-lightbox="true"]');
+
+      const openLightbox = (element) => {
+        const isVideo = element.getAttribute('data-isVideo') === 'true';
+        const caption = element.getAttribute('data-caption') || '';
+        
+        lightboxMediaContainer.innerHTML = ''; 
+        
+        if (isVideo) {
+          const videoSrc = element.querySelector('source').src;
+          lightboxMediaContainer.innerHTML = `
+            <video autoplay loop controls playsinline style="max-height: 85vh;">
+              <source src="${videoSrc}" type="video/mp4">
+            </video>`;
+        } else {
+          const imgSrc = element.querySelector('img').src;
+          lightboxMediaContainer.innerHTML = `<img src="${imgSrc}" alt="${caption}" />`;
+        }
+        
+        lightboxCaption.textContent = caption;
+        lightbox.classList.add('active');
+      };
+
+      const closeLightbox = () => {
+        lightbox.classList.remove('active');
+        setTimeout(() => {
+          lightboxMediaContainer.innerHTML = ''; 
+        }, 400);
+      };
+
+      mediaTriggers.forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+          if(e.target.tagName.toLowerCase() !== 'video') {
+            openLightbox(trigger);
+          }
+        });
+      });
+
+      closeBg.addEventListener('click', closeLightbox);
+      closeBtn.addEventListener('click', closeLightbox);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+          closeLightbox();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
