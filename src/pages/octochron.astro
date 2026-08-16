@@ -603,10 +603,10 @@
       const parallaxStars = document.getElementById('parallax-stars');
       const parallaxNebula = document.getElementById('parallax-nebula');
       const scrollIndicator = document.getElementById('scroll-indicator');
-      const heroVideo = document.getElementById('hero-video');
+      const heroVideo = document.getElementById('hero-video') as HTMLVideoElement;
       
       // 2. Audio Engine Setup
-      const bgmAudio = document.getElementById('bgm-audio');
+      const bgmAudio = document.getElementById('bgm-audio') as HTMLAudioElement;
       const bgmToggle = document.getElementById('bgm-toggle');
       let isPlaying = false; // Tracks if user globally allowed/wants audio
 
@@ -655,7 +655,7 @@
       let targetScrollY = 0;
       let inVideoScene = false;
 
-      function lerp(start, end, factor) {
+      function lerp(start: number, end: number, factor: number) {
         return start + (end - start) * factor;
       }
 
@@ -672,7 +672,8 @@
         parallaxStars.style.transform = `scale(${bgZoom}) rotate(${currentScrollY * 0.005}deg)`;
         parallaxNebula.style.transform = `scale(${bgZoom + 0.1}) rotate(${currentScrollY * 0.002}deg)`;
 
-        scenes.forEach((scene, index) => {
+        scenes.forEach((el, index) => {
+          const scene = el as HTMLElement;
           const sceneStart = index * sceneScrollDistance;
           const progress = (currentScrollY - sceneStart) / sceneScrollDistance;
 
@@ -694,7 +695,7 @@
             }
           }
 
-          scene.style.opacity = Math.max(0, Math.min(1, opacity));
+          scene.style.opacity = String(Math.max(0, Math.min(1, opacity)));
           scene.style.transform = `scale(${Math.max(0, scale)})`;
           scene.style.pointerEvents = activeEvents ? 'auto' : 'none';
 
@@ -708,7 +709,7 @@
               } else {
                 heroVideo.muted = true;
               }
-              heroVideo.play().catch(e => {});
+              heroVideo.play().catch(() => {});
             } else if (!activeEvents && inVideoScene) {
               inVideoScene = false;
               heroVideo.pause();
@@ -719,7 +720,7 @@
         // Safety checks for Audio routing
         if (isPlaying) {
           if (!inVideoScene && bgmAudio.paused) {
-            bgmAudio.play().catch(e => {});
+            bgmAudio.play().catch(() => {});
           }
         } else {
           if (!bgmAudio.paused) {
@@ -744,7 +745,7 @@
       const closeBtn = document.getElementById('lightbox-close-btn');
       const mediaTriggers = document.querySelectorAll('.media-container[data-lightbox="true"]');
 
-      const openLightbox = (element) => {
+      const openLightbox = (element: Element) => {
         const isVideo = element.getAttribute('data-isVideo') === 'true';
         const caption = element.getAttribute('data-caption') || '';
         
@@ -774,7 +775,7 @@
 
       mediaTriggers.forEach(trigger => {
         trigger.addEventListener('click', (e) => {
-          if(e.target.tagName.toLowerCase() !== 'video') {
+          if((e.target as HTMLElement).tagName.toLowerCase() !== 'video') {
             openLightbox(trigger);
           }
         });
