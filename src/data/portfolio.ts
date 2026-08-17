@@ -11,7 +11,7 @@ export interface PortfolioNode {
 }
 
 export const portfolioNodes: PortfolioNode[] = [
-  {
+    {
     title: "Metamorphic Resonance Human Language Gamers",
     url: "https://github.com/plantacerium/Metamorphic-Resonance-Human-Language-Gamers",
     domain: "Language Meditators Gamers Legends",
@@ -26,11 +26,53 @@ export const portfolioNodes: PortfolioNode[] = [
     category: "system"
   },
   {
+    title: "Mandala Weaver VCS",
+    url: "https://github.com/plantacerium/Mandala-Weaver-VCS",
+    domain: "Versions Cooperation System",
+    impact: "VCS Engine Spatial, Radial, Semantic. In this system, code emanates as pure logic units from an immutable center toward concentric rings of evolution.",
+    category: "system"
+  },
+  {
+    title: "Agents Question First Protocol",
+    url: "https://github.com/plantacerium/Agents-Question-First-Protocol",
+    domain: "Questions are the fundamental units of knowledge, exploration, and decision making.",
+    impact: "The Question First Protocol (QOP) establishes questions as first class citizens in autonomous agent systems.",
+    category: "system"
+  },
+  {
+    title: "AI Swarm Engine",
+    url: "https://github.com/plantacerium/MRHLG-Swarm-Engine",
+    domain: "Train to avoid confirmation bias by reading different perspectives in one UI",
+    impact: "Your own AI board of characters to obtain different perspectives. In a 3x3 Mosaic setup with a framework of Thesis - Synthesis - Antithesis.",
+    category: "ui"
+  },
+  {
     title: "La Colisión de los Tres Ángulos",
     url: "https://github.com/plantacerium/La-Colision-de-los-Tres-Angulos",
     domain: "Meditación",
     impact: "Una epopeya de autodescubrimiento, geometría del alma y evolución espiritual.",
     category: "zen"
+  },
+  {
+    title: "Git AST Search",
+    url: "https://github.com/plantacerium/Git-AST-Search",
+    domain: "Search Code & Patterns Across Git History",
+    impact: "Git AST Search is a high-performance terminal user interface TUI tool designed for historical code mining, this tool leverages Abstract Syntax Tree Analysis to find exact code structures, across all the Git History.",
+    category: "system"
+  },
+  {
+    title: "Gocurvicnamics",
+    url: "https://github.com/plantacerium/Gocurvicnamics",
+    domain: "Collisions Particle Game with Infinity Time",
+    impact: "Kinetic collisions trajectory based strategy game.",
+    category: "ui"
+  },
+  {
+    title: "Silice Protocol AI",
+    url: "https://github.com/plantacerium/Silice-Protocol-AI-Driven-Development-Self-Indexing-Spec-Engine",
+    domain: "Spec as Source",
+    impact: "Atomic orchestration framework designed to eliminate token-waste and context-entropy in AI-driven development. Single Source of Ontology by using AST to auto index the codebase and consolidating life cycles events with GIT.",
+    category: "system"
   },
   {
     title: "Anima Essentia",
