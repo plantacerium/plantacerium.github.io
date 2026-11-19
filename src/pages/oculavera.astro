@@ -240,6 +240,43 @@ const images = [
       margin-bottom: 4rem;
     }
 
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.72);
+    }
+    .play-store-title {
+      font-size: 1.05rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+    .cta-subtext {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: #777;
+      letter-spacing: 0.01em;
+    }
+    .bottom-cta-card {
+      background: rgba(255, 255, 255, 0.68);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      border-radius: 28px;
+      padding: 4.5rem 2rem;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-cta-card h2 {
+      margin-bottom: 1rem;
+    }
+    .bottom-cta-card p {
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: #555;
+      max-width: 520px;
+      margin-bottom: 2.25rem;
+    }
+
     .showcase-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -389,6 +426,28 @@ const images = [
       <h1>OculaVera</h1>
       <p>Capture maximum light on the fly with the depth and precision required for professional cinematography and photography.</p>
       
+      <div class="cta-group">
+        <a
+          href="https://play.google.com/store/apps/details?id=com.oculavera.engine&hl=es_US"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="play-store-btn"
+          aria-label="Download OculaVera on Google Play"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M3.609 1.814L13.792 12 3.61 22.186a1.75 1.75 0 0 1-.61-1.334V3.148c0-.517.224-.998.609-1.334z" fill="#4285F4"/>
+            <path d="M17.204 8.588L13.792 12l3.412 3.412 3.854-2.198c.85-.485.85-1.943 0-2.428l-3.854-2.198z" fill="#FBBC05"/>
+            <path d="M17.204 15.412L13.792 12 3.609 22.186c.42.373 1.036.473 1.606.148l11.989-6.922z" fill="#EA4335"/>
+            <path d="M3.609 1.814l10.183 10.186 3.412-3.412L5.215 1.666c-.57-.325-1.186-.225-1.606.148z" fill="#34A853"/>
+          </svg>
+          <span class="play-store-text">
+            <span class="play-store-kicker">Get it on</span>
+            <span class="play-store-title">Google Play</span>
+          </span>
+        </a>
+        <span class="cta-subtext">Available now for Android devices</span>
+      </div>
+
       <div class="showcase-grid">
         <div class="showcase-item">
           <img src="/assets/oculavera/Screenshot_2026-08-19-10-00-46-06_94c51058a2bab63b2d331338dd6f3110.jpg" alt="OculaVera Interface 1" />
@@ -458,7 +517,30 @@ const images = [
         </div>
       </div>
     </section>
-
+    <section class="container">
+      <div class="bottom-cta-card">
+        <h2>Ready to Capture More Light?</h2>
+        <p>Download OculaVera and unlock full computational photography, and manual cinema controls on your Android device.</p>
+        <a
+          href="https://play.google.com/store/apps/details?id=com.oculavera.engine&hl=es_US"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="play-store-btn"
+          aria-label="Download OculaVera on Google Play"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M3.609 1.814L13.792 12 3.61 22.186a1.75 1.75 0 0 1-.61-1.334V3.148c0-.517.224-.998.609-1.334z" fill="#4285F4"/>
+            <path d="M17.204 8.588L13.792 12l3.412 3.412 3.854-2.198c.85-.485.85-1.943 0-2.428l-3.854-2.198z" fill="#FBBC05"/>
+            <path d="M17.204 15.412L13.792 12 3.609 22.186c.42.373 1.036.473 1.606.148l11.989-6.922z" fill="#EA4335"/>
+            <path d="M3.609 1.814l10.183 10.186 3.412-3.412L5.215 1.666c-.57-.325-1.186-.225-1.606.148z" fill="#34A853"/>
+          </svg>
+          <span class="play-store-text">
+            <span class="play-store-kicker">Get it on</span>
+            <span class="play-store-title">Google Play</span>
+          </span>
+        </a>
+      </div>
+    </section>
 
   </main>
 
